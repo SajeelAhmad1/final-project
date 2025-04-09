@@ -7,7 +7,7 @@ export default function Home() {
     document.title = "Login - Lyalla and Lora";
     const metaDescription = document.querySelector("meta[name='description']");
     if (metaDescription) {
-      metaDescription.setAttribute(
+      metaDescription.setAttribute( 
         "content",
         "Login yourself on Lyalla and Lora"
       );
