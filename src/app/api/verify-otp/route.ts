@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         create: {
           email: email,
           verified: true,
-          password: "abcd1234Y@"
+          password: ""
         },
       });
     } else {

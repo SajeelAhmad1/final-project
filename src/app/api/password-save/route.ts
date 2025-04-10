@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       data: {
         password: hashedNewPassword,
         isPasswordSet: true,
-        role: "CUSTOMER",
+        role: "STUDENT",
       },
     });
 

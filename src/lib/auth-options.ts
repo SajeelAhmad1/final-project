@@ -31,8 +31,9 @@ export const authOptions = {
       profile(profile) {
         return {
           id: profile.sub,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
+          name: profile.name || '',
+          firstName: profile.given_name || profile.name?.split(' ')[0] || '',
+          lastName: profile.family_name || profile.name?.split(' ')[1] || '',
           email: profile.email,
           image: profile.picture,
           verified: true,
@@ -79,7 +80,7 @@ export const authOptions = {
               {
                 email: credentials.email,
                 password: credentials.password,
-                role: ROLE.CUSTOMER,
+                role: ROLE.STUDENT,
               }
             );
 
@@ -91,40 +92,73 @@ export const authOptions = {
 
           if (!user) return null;
 
-          const customerProfile = await prisma.customerProfile.findUnique({
+          const student = await prisma.student.findUnique({
             where: { userId: user.id },
           });
 
           return {
             ...user,
-            customerProfile: customerProfile || null,
+            student: student || null,
+            isProfileComplete: !!student,
           };
         } catch (error) {
-          console.error("Authorization error:", error);
+          console.error("Detailed authorization error:", {
+            message: error.message,
+            stack: error.stack,
+            credentials
+          });
           return null;
         }
       },
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         // Check if user exists in your database
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email },
+          include: { student: true },
         });
-
+    
         if (!existingUser) {
           // Create new user for Google sign-in
-          await prisma.user.create({
+          const newUser = await prisma.user.create({
             data: {
               email: user.email,
-              name: user.name,
               verified: true,
               loginType: "GOOGLE",
-              role: ROLE.CUSTOMER,
+              role: ROLE.STUDENT,
+              student: {
+                create: {
+                  firstName: profile?.given_name || user.firstName,
+                  lastName: profile?.family_name || user.lastName,
+                  // You can add more default profile fields if needed
+                }
+              }
             },
+            include: { student: true },
           });
+          user.id = newUser.id;
+          user.student = newUser.student;
+          user.isProfileComplete = !!newUser.student;
+        } else {
+          user.id = existingUser.id;
+          user.student = existingUser.student;
+          user.isProfileComplete = !!existingUser.student;
+          
+          // If user exists but doesn't have a profile, create one
+          if (!existingUser.student) {
+            const profile = await prisma.student.create({
+              data: {
+                userId: existingUser.id,
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+              }
+            });
+            user.student = profile;
+            user.isProfileComplete = true;
+          }
         }
       }
       return true;
@@ -132,31 +166,62 @@ export const authOptions = {
     async jwt({ token, user, account }) {
       // Initial sign-in
       if (account && user) {
-        return {
+        token = {
           ...token,
           id: user.id,
           email: user.email,
-          role: user.role || ROLE.CUSTOMER,
+          role: user.role || ROLE.STUDENT,
           loginType: account.provider === "google" ? "GOOGLE" : "CREDENTIALS",
+          student: user.student || null,
+          isProfileComplete: !!user.student,
+          verified: user.verified,
+          name: user.student 
+            ? `${user.student.firstName} ${user.student.lastName}`.trim()
+            : '',
         };
       }
+    
+      // For credential logins
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.isProfileComplete = !!user.student;
+        token.student = user.student || null;
+        token.verified = user.verified;
+        token.role = user.role;
+        token.loginType = user.loginType;
+        token.token = user.token;
+        token.name = user.student 
+          ? `${user.student.firstName} ${user.student.lastName}`.trim()
+          : '';
+      }
+    
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          id: token.id,
-          email: token.email,
-          role: token.role,
-          loginType: token.loginType,
-        },
+      session.user = {
+        ...session.user,
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        role: token.role,
+        loginType: token.loginType,
+        isProfileComplete: token.isProfileComplete,
+        student: token.student,
+        verified: token.verified,
       };
+      return session;
     },
     async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
+
+export default authOptions;

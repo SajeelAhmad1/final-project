@@ -5,12 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Users, 
-  ShoppingBag, 
-  Package, 
-  Layers, 
+  GraduationCap, 
+  BookOpen, 
+  Building, 
+  Clock, 
+  Calendar, 
+  Bell, 
   Settings, 
   Menu, 
-  X 
+  X,
+  Home,
+  BarChart
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -22,10 +27,17 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
-    { name: 'Products', href: '/admin/products', icon: Package },
-    { name: 'Categories', href: '/admin/categories', icon: Layers },
-    { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
-    { name: 'Customers', href: '/admin/customers', icon: Users },
+    { name: 'Dashboard', href: '/admin', icon: Home },
+    { name: 'Users', href: '/admin/users', icon: Users },
+    { name: 'Students', href: '/admin/students', icon: GraduationCap },
+    { name: 'Faculty', href: '/admin/faculty', icon: Users },
+    { name: 'Courses', href: '/admin/courses', icon: BookOpen },
+    { name: 'Classes', href: '/admin/classes', icon: Clock },
+    { name: 'Rooms', href: '/admin/rooms', icon: Building },
+    { name: 'Exams', href: '/admin/exams', icon: Calendar },
+    { name: 'Leaves', href: '/admin/leaves', icon: Calendar },
+    { name: 'Notifications', href: '/admin/notifications', icon: Bell },
+    { name: 'Reports', href: '/admin/reports', icon: BarChart },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
@@ -56,7 +68,7 @@ export default function AdminLayout({
           <div className="fixed inset-y-0 left-0 pt-16 max-w-xs w-full bg-white shadow-lg z-50">
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
                 return (
                   <Link
                     key={item.name}
@@ -93,7 +105,7 @@ export default function AdminLayout({
           <div className="mt-8 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-1">
               {navigation.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
                 return (
                   <Link
                     key={item.name}

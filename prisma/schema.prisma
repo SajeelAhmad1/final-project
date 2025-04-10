@@ -7,28 +7,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//// ==================== USERS & AUTH ==================== ////
+// ====== USER MANAGEMENT ======
+enum Role {
+  ADMIN
+  FACULTY
+  STUDENT
+}
+
 model User {
-  id           String    @id @default(uuid())
-  
-  email        String    @unique
-  password     String?
-  role         UserRole  @default(CUSTOMER) 
-  isAdmin      Boolean   @default(false)
-  verified            Boolean            @default(false)
-  isPasswordSet       Boolean            @default(false)
-  isProfileComplete       Boolean            @default(false)
-  loginType          String 
-  // Relationships
-  customerProfile CustomerProfile? 
-  orders       Order[]
-  cart         Cart?
-  wishlist     Wishlist?
-  reviews      Review[]
-  products     Product[] @relation("VendorProducts") // Vendors can have products
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                String        @id @default(uuid())
+  email             String        @unique
+  password          String?       
+  verified          Boolean       @default(false)
+  isPasswordSet     Boolean       @default(false)
+  isProfileComplete Boolean       @default(false)
+  loginType         String?
+  role              Role          @default(STUDENT) // Add default value here
+  faculty           Faculty?
+  student           Student?
+  notifications     Notification[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Faculty {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName   String
+  department  String
+  designation String
+  user        User      @relation(fields: [userId], references: [id]) // Only here
+  userId      String    @unique
+  courses     Course[]
+  leaves      Leave[]   @relation("LeaveRequester")
+  substituteLeaves Leave[] @relation("LeaveSubstitute")
+  invigilations Exam[]  @relation("ExamInvigilator")
+  createdAt   DateTime  @default(now())
+}
+
+model Student {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName   String
+  rollNumber  String    @unique
+  batch       String
+  phone             String
+  imageUrl          String?
+  streetAddress     String?
+  city              String?
+  state             String?
+  postalCode        String?
+  country           String?
+  department  String
+  user        User      @relation(fields: [userId], references: [id]) // Only here
+  userId      String    @unique
+  enrollments Enrollment[]
+  seatings    Seating[]
+  createdAt   DateTime  @default(now())
 }
 
 model Otp {
@@ -39,259 +74,124 @@ model Otp {
   expiresAt DateTime @map("expires_at")
 }
 
-model CustomerProfile {
-  id                String      @id @default(uuid())
-  firstName         String      @default("")
-  lastName          String      @default("")
-  phone             String?
-  imageUrl          String?
-  
-  // More detailed address fields
-  streetAddress     String?
-  city              String?
-  state             String?
-  postalCode        String?
-  country           String?
-  
-  userId            String      @unique
-  user              User        @relation(fields: [userId], references: [id])
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+// ====== COURSE & CLASS SCHEDULING ======
+model Course {
+  id           String     @id @default(uuid())
+  code         String     @unique
+  name         String
+  department   String
+  credits      Int
+  faculty      Faculty?   @relation(fields: [facultyId], references: [id])
+  facultyId    String?
+  classes      Class[]
+  enrollments  Enrollment[]
+  exams        Exam[]
+  createdAt    DateTime   @default(now())
 }
 
-
-model Category {
-  id            String        @id @default(uuid())
-  name          String        @unique
-  description   String?
-  subcategories SubCategory[]
-  products      Product[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+model Class {
+  id          String     @id @default(uuid())
+  course      Course     @relation(fields: [courseId], references: [id])
+  courseId    String
+  room        Room?      @relation(fields: [roomId], references: [id])
+  roomId      String?
+  startTime   DateTime
+  endTime     DateTime
+  dayOfWeek   String
+  recurring   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
 }
 
-model SubCategory {
-  id          String    @id @default(uuid())
-  name        String    
-  description String?
-  
-  // Relation to parent category
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
-  
-  // Products in this subcategory
-  products    Product[]
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  // Ensure subcategory names are unique within a category
-  @@unique([categoryId, name])
+// ====== ROOM & RESOURCE MANAGEMENT ======
+model Room {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  capacity    Int
+  type        RoomType
+  classes     Class[]
+  exams       Exam[]
+  resources   Resource[]
+  createdAt   DateTime   @default(now())
 }
 
-model Product {
-  id              String      @id @default(uuid())
-  name            String
-  description     String
-  shortDescription String
-  color           String[]
-  size            String[]
-  price           Decimal     @db.Decimal(10,4)
-  discount        Decimal?    @db.Decimal(10,4)
-  isFeatured      Boolean     @default(false)
-  isBestChoice    Boolean     @default(false)
-  stock           Int         @default(0)
-  sku             String      @unique
-  images          String[]
-  
-  // Category relationship
-  categoryId      String?
-  category        Category?   @relation(fields: [categoryId], references: [id])
-  
-  // New subcategory relationship
-  subcategoryId   String?
-  subcategory     SubCategory? @relation(fields: [subcategoryId], references: [id])
-  
-  // Other relationships remain the same
-  vendorId        String?
-  vendor          User?       @relation(name: "VendorProducts", fields: [vendorId], references: [id])
-  
-  reviews         Review[]
-  orderItems      OrderItem[]
-  cartItems       CartItem[]
-  wishlistItems   WishlistItem[]
-
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+enum RoomType {
+  LECTURE_HALL
+  LAB
+  SEMINAR_ROOM
 }
 
-enum UserRole {
-  CUSTOMER
-  VENDOR
+model Resource {
+  id          String     @id @default(uuid())
+  name        String
+  type        String
+  room        Room       @relation(fields: [roomId], references: [id])
+  roomId      String
+  createdAt   DateTime   @default(now())
 }
 
-//// ==================== CART & WISHLIST ==================== ////
-model Cart {
-  id        String    @id @default(uuid())
-  userId    String?    @unique
-  user      User?      @relation(fields: [userId], references: [id])
-  isGuestCart Boolean     @default(false)
-  items     CartItem[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+// ====== EXAM MANAGEMENT ======
+model Exam {
+  id          String     @id @default(uuid())
+  course      Course     @relation(fields: [courseId], references: [id])
+  courseId    String
+  date        DateTime
+  duration    Int
+  room        Room       @relation(fields: [roomId], references: [id])
+  roomId      String
+  seating     Seating[]
+  invigilator Faculty?   @relation("ExamInvigilator", fields: [invigilatorId], references: [id])
+  invigilatorId String?
+  createdAt   DateTime   @default(now())
 }
 
-model CartItem {
-  id        String   @id @default(uuid())
-  cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
+model Seating {
+  id          String     @id @default(uuid())
+  exam        Exam       @relation(fields: [examId], references: [id])
+  examId      String
+  student     Student    @relation(fields: [studentId], references: [id])
+  studentId   String
+  seatNumber  String
+  createdAt   DateTime   @default(now())
 }
 
-model Wishlist {
-  id        String       @id @default(uuid())
-  userId    String       @unique
-  user      User         @relation(fields: [userId], references: [id])
-  items     WishlistItem[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+// ====== LEAVE & SUBSTITUTE MANAGEMENT ======
+model Leave {
+  id          String     @id @default(uuid())
+  faculty     Faculty    @relation("LeaveRequester", fields: [facultyId], references: [id])
+  facultyId   String
+  startDate   DateTime
+  endDate     DateTime
+  reason      String
+  substitute  Faculty?   @relation("LeaveSubstitute", fields: [substituteId], references: [id])
+  substituteId String?
+  status      LeaveStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
 }
 
-model WishlistItem {
-  id        String   @id @default(uuid())
-  wishlistId String
-  wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id])
-}
-
-//// ==================== ORDERS & PAYMENTS ==================== ////
-model Order {
-  id                  String       @id @default(uuid())
-  userId              String?
-  user                User?         @relation(fields: [userId], references: [id])
-  items               OrderItem[]
-  
-  // Shipping Address Details
-  shippingFirstName   String
-  shippingLastName    String
-  shippingStreet      String
-  shippingCity        String
-  shippingState       String?
-  shippingPostalCode  String
-  shippingCountry     String
-  shippingPhone       String
-  
-  // Billing Address Details
-  billingFirstName    String?
-  billingLastName     String?
-  billingStreet       String?
-  billingCity         String?
-  billingState        String?
-  billingPostalCode   String?
-  billingCountry      String?
-  
-  totalPrice          Decimal
-  status              OrderStatus  @default(PENDING)
-  payment             Payment?
-  shipment            Shipment?
-
-  guestEmail          String?      
-  isGuestOrder        Boolean      @default(false)
-  
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-}
-
-model OrderItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Decimal
-}
-
-model Payment {
-  id        String   @id @default(uuid())
-  orderId   String   @unique
-  order     Order    @relation(fields: [orderId], references: [id])
-  method    PaymentMethod
-  status    PaymentStatus @default(PENDING)
-  transactionId String?
-  createdAt DateTime @default(now())
-}
-
-model Shipment {
-  id        String    @id @default(uuid())
-  orderId   String    @unique
-  order     Order     @relation(fields: [orderId], references: [id])
-  status    ShipmentStatus @default(PENDING)
-  trackingNumber String?
-  courier   String?
-  estimatedDelivery DateTime?
-  createdAt DateTime  @default(now())
-}
-
-//// ==================== COUPONS & DISCOUNTS ==================== ////
-model Coupon {
-  id         String   @id @default(uuid())
-  code       String   @unique
-  discount   Decimal
-  expiryDate DateTime
-  usageLimit Int      @default(1)
-  usedBy     String[] // Array of user IDs
-}
-
-//// ==================== REVIEWS & RATINGS ==================== ////
-model Review {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  rating    Float
-  comment   String?
-  createdAt DateTime @default(now())
-}
-
-model Subscriber {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-//// ==================== ENUMS ==================== ////
-enum OrderStatus {
+enum LeaveStatus {
   PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  RETURNED
+  APPROVED
+  REJECTED
 }
 
-enum PaymentMethod {
-  CREDIT_CARD
-  PAYPAL
-  STRIPE
-  CASH_ON_DELIVERY
+// ====== NOTIFICATIONS ======
+model Notification {
+  id          String     @id @default(uuid())
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  title       String
+  message     String
+  isRead      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
 }
 
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum ShipmentStatus {
-  PENDING
-  IN_TRANSIT
-  DELIVERED
-  RETURNED
+// ====== STUDENT ENROLLMENTS ======
+model Enrollment {
+  id          String     @id @default(uuid())
+  student     Student    @relation(fields: [studentId], references: [id])
+  studentId   String
+  course      Course     @relation(fields: [courseId], references: [id])
+  courseId    String
+  semester    String
+  createdAt   DateTime   @default(now())
 }

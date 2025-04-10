@@ -2,6 +2,7 @@
 export const BASE_URL = "http://localhost:3000/api";
 // export const s3Url = "https://avaassets.s3.ca-central-1.amazonaws.com/"
 export const ROLE = {
-  CUSTOMER: "CUSTOMER",
-  VENDOR: "VENDOR",
+  STUDENT: "STUDENT",
+  ADMIN: "ADMIN",
+  FACULTY: "FACULTY"
 };

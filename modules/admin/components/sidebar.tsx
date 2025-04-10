@@ -2,25 +2,30 @@
 "use client"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Package, Settings, Home, Users, BarChart } from 'lucide-react';
+import { Users, GraduationCap, BookOpen, Building, Clock, Calendar, Bell, Settings, Home, BarChart } from 'lucide-react';
 
 const Sidebar = () => {
   const pathname = usePathname();
 
   const menuItems = [
     { title: 'Dashboard', icon: <Home size={20} />, path: '/admin' },
-    { title: 'Products', icon: <Package size={20} />, path: '/admin/products' },
-    { title: 'Categories', icon: <Package size={20} />, path: '/admin/categories' },
-    { title: 'Orders', icon: <ShoppingBag size={20} />, path: '/admin/orders' },
-    { title: 'Customers', icon: <Users size={20} />, path: '/admin/customers' },
-    { title: 'Analytics', icon: <BarChart size={20} />, path: '/admin/analytics' },
+    { title: 'Users', icon: <Users size={20} />, path: '/admin/users' },
+    { title: 'Students', icon: <GraduationCap size={20} />, path: '/admin/students' },
+    { title: 'Faculty', icon: <Users size={20} />, path: '/admin/faculty' },
+    { title: 'Courses', icon: <BookOpen size={20} />, path: '/admin/courses' },
+    { title: 'Classes', icon: <Clock size={20} />, path: '/admin/classes' },
+    { title: 'Rooms', icon: <Building size={20} />, path: '/admin/rooms' },
+    { title: 'Exams', icon: <Calendar size={20} />, path: '/admin/exams' },
+    { title: 'Leaves', icon: <Calendar size={20} />, path: '/admin/leaves' },
+    { title: 'Notifications', icon: <Bell size={20} />, path: '/admin/notifications' },
+    { title: 'Reports', icon: <BarChart size={20} />, path: '/admin/reports' },
     { title: 'Settings', icon: <Settings size={20} />, path: '/admin/settings' },
   ];
 
   return (
     <aside className="w-64 bg-white shadow-md">
       <div className="p-4 border-b">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
+        <h1 className="text-xl font-bold">Admin </h1>
       </div>
       <nav className="px-2 py-4">
         <ul className="space-y-1">
