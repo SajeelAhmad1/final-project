@@ -38,8 +38,10 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
     courseId: '',
     roomId: '',
     sessionId: '',
-    sectionId: ''
+    sectionId: '',
+    preferredDay: ''
   });
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const [courses, setCourses] = useState<Course[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -250,6 +252,20 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
             ))}
           </select>
         </div>
+
+        <div>
+        <label className="block text-sm font-medium mb-1">Preferred Day</label>
+        <select
+          value={formData.preferredDay}
+          onChange={(e) => setFormData({...formData, preferredDay: e.target.value})}
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="">No preference</option>
+          {days.map(day => (
+            <option key={day} value={day}>{day}</option>
+          ))}
+        </select>
+      </div>
         
         <button
           type="submit"

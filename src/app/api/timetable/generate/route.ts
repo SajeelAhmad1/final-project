@@ -71,9 +71,15 @@ export async function POST() {
       }
     });
 
-    // 5. Enhanced scheduling algorithm
+    // 5. Enhanced scheduling algorithm with preferred days
     const scheduledResults = [];
-    const examHallUsage: Record<string, number> = {}; // Track exam hall usage per course
+    const examHallUsage: Record<string, number> = {};
+    const schedulingAlerts: string[] = [];
+    const schedulingStats = {
+      preferredDayMatched: 0,
+      preferredDayNotMatched: 0,
+      totalScheduled: 0
+    };
 
     // Sort courses by priority (those with more sections first)
     const sortedCourses = Object.values(courseGroups).sort((a: any, b: any) => 
@@ -85,118 +91,108 @@ export async function POST() {
       examHallUsage[courseId] = 0;
       const classesToSchedule = [...courseData.classes];
       
-      // Try to schedule 2 classes in exam hall first
+      // Try to schedule 2 classes in exam hall first (respecting preferred days)
       for (let i = 0; i < Math.min(2, classesToSchedule.length); i++) {
         const cls = classesToSchedule[i];
         let scheduled = false;
 
-        // Try each day and time block
-        dayLoop: for (const day of days) {
-          for (const block of timeBlocks) {
-            if (roomAllocations[day][block.name].examHall.available) {
-              const startTime = new Date(`1970-01-01T${block.start}:00`);
-              const endTime = new Date(`1970-01-01T${block.end}:00`);
-
-              const updatedClass = await prisma.class.update({
-                where: { id: cls.id },
-                data: {
-                  status: "SCHEDULED",
-                  roomId: rooms.find(r => r.type === 'EXAM_HALL')?.id,
-                  dayOfWeek: day,
-                  startTime,
-                  endTime
-                }
-              });
-
-              scheduledResults.push(updatedClass);
-              roomAllocations[day][block.name].examHall.available = false;
-              examHallUsage[courseId]++;
-              scheduled = true;
-              break dayLoop;
-            }
+        // Try preferred day first if specified
+        if (cls.preferredDay) {
+          scheduled = await tryScheduleInExamHall(cls, cls.preferredDay, roomAllocations, scheduledResults, examHallUsage);
+          if (scheduled) {
+            schedulingStats.preferredDayMatched++;
+            classesToSchedule.splice(i, 1);
+            i--;
+            continue;
           }
         }
 
-        if (scheduled) {
-          classesToSchedule.splice(i, 1);
-          i--; // Adjust index after removal
+        // Try other days if preferred day not available
+        dayLoop: for (const day of days) {
+          if (cls.preferredDay && day === cls.preferredDay) continue; // Already tried
+          
+          scheduled = await tryScheduleInExamHall(cls, day, roomAllocations, scheduledResults, examHallUsage);
+          if (scheduled) {
+            if (cls.preferredDay) {
+              schedulingStats.preferredDayNotMatched++;
+              schedulingAlerts.push(
+                `Class ${cls.course.code} (${cls.section?.name || 'no section'}) ` +
+                `could not be scheduled on preferred day (${cls.preferredDay}) ` +
+                `and was scheduled in exam hall on ${day} instead`
+              );
+            }
+            classesToSchedule.splice(i, 1);
+            i--;
+            break dayLoop;
+          }
         }
       }
 
-      // Schedule remaining classes in regular rooms
+      // Schedule remaining classes in regular rooms (respecting preferred days)
       for (const cls of classesToSchedule) {
         let scheduled = false;
 
+        // Try preferred day first if specified
+        if (cls.preferredDay) {
+          scheduled = await tryScheduleInRegularRoom(cls, cls.preferredDay, roomAllocations, scheduledResults);
+          if (scheduled) {
+            schedulingStats.preferredDayMatched++;
+            continue;
+          }
+        }
+
+        // Try other days if preferred day not available
         dayLoop: for (const day of days) {
-          for (const block of timeBlocks) {
-            // Find first available regular room
-            const availableRoom = roomAllocations[day][block.name].rooms.find(
-              (r: any) => r.available
-            );
+          if (cls.preferredDay && day === cls.preferredDay) continue; // Already tried
+          
+          scheduled = await tryScheduleInRegularRoom(cls, day, roomAllocations, scheduledResults);
+          if (scheduled) {
+            if (cls.preferredDay) {
+              schedulingStats.preferredDayNotMatched++;
+              schedulingAlerts.push(
+                `Class ${cls.course.code} (${cls.section?.name || 'no section'}) ` +
+                `could not be scheduled on preferred day (${cls.preferredDay}) ` +
+                `and was scheduled in regular room on ${day} instead`
+              );
+            }
+            break dayLoop;
+          }
+        }
 
-            if (availableRoom) {
-              const startTime = new Date(`1970-01-01T${block.start}:00`);
-              const endTime = new Date(`1970-01-01T${block.end}:00`);
-
-              const updatedClass = await prisma.class.update({
-                where: { id: cls.id },
-                data: {
-                  status: "SCHEDULED",
-                  roomId: availableRoom.id,
-                  dayOfWeek: day,
-                  startTime,
-                  endTime
-                }
-              });
-
-              scheduledResults.push(updatedClass);
-              availableRoom.available = false;
-              scheduled = true;
+        // Final fallback to exam hall if needed
+        if (!scheduled) {
+          dayLoop: for (const day of days) {
+            scheduled = await tryScheduleInExamHall(cls, day, roomAllocations, scheduledResults, examHallUsage);
+            if (scheduled) {
+              if (cls.preferredDay) {
+                schedulingAlerts.push(
+                  `Class ${cls.course.code} (${cls.section?.name || 'no section'}) ` +
+                  `could not be scheduled on preferred day (${cls.preferredDay}) ` +
+                  `or in any regular room, and was scheduled in exam hall on ${day} instead`
+                );
+              }
               break dayLoop;
             }
           }
         }
 
-        // If couldn't schedule in regular rooms, try exam hall as fallback
         if (!scheduled) {
-          dayLoop: for (const day of days) {
-            for (const block of timeBlocks) {
-              if (roomAllocations[day][block.name].examHall.available) {
-                const startTime = new Date(`1970-01-01T${block.start}:00`);
-                const endTime = new Date(`1970-01-01T${block.end}:00`);
-
-                const updatedClass = await prisma.class.update({
-                  where: { id: cls.id },
-                  data: {
-                    status: "SCHEDULED",
-                    roomId: rooms.find(r => r.type === 'EXAM_HALL')?.id,
-                    dayOfWeek: day,
-                    startTime,
-                    endTime
-                  }
-                });
-
-                scheduledResults.push(updatedClass);
-                roomAllocations[day][block.name].examHall.available = false;
-                examHallUsage[courseId]++;
-                scheduled = true;
-                break dayLoop;
-              }
-            }
-          }
-        }
-
-        if (!scheduled) {
-          console.warn(`Could not schedule class ${cls.id} for course ${courseId}`);
+          schedulingAlerts.push(
+            `Failed to schedule class ${cls.course.code} (${cls.section?.name || 'no section'})`
+          );
         }
       }
     }
+
+    schedulingStats.totalScheduled = scheduledResults.length;
 
     return NextResponse.json({
       success: true,
       scheduledCount: scheduledResults.length,
       examHallUsage,
-      message: `Scheduled ${scheduledResults.length} classes across all rooms`
+      alerts: schedulingAlerts,
+      stats: schedulingStats,
+      message: `Scheduled ${scheduledResults.length} classes`
     });
   } catch (error) {
     console.error('Generation error:', error);
@@ -209,4 +205,72 @@ export async function POST() {
       { status: 500 }
     );
   }
+}
+
+async function tryScheduleInExamHall(
+  cls: any,
+  day: string,
+  roomAllocations: Record<string, any>,
+  scheduledResults: any[],
+  examHallUsage: Record<string, number>
+) {
+  const timeBlocks = ['Morning', 'Afternoon'];
+  const examHallId = roomAllocations[day]['Morning'].examHall.id;
+
+  for (const block of timeBlocks) {
+    if (roomAllocations[day][block].examHall.available) {
+      const startTime = new Date(`1970-01-01T${block === 'Morning' ? '08:30' : '12:00'}:00`);
+      const endTime = new Date(`1970-01-01T${block === 'Morning' ? '11:30' : '15:00'}:00`);
+
+      await prisma.class.update({
+        where: { id: cls.id },
+        data: {
+          status: "SCHEDULED",
+          roomId: examHallId,
+          dayOfWeek: day,
+          startTime,
+          endTime
+        }
+      });
+
+      scheduledResults.push(cls.id);
+      roomAllocations[day][block].examHall.available = false;
+      examHallUsage[cls.courseId] = (examHallUsage[cls.courseId] || 0) + 1;
+      return true;
+    }
+  }
+  return false;
+}
+
+async function tryScheduleInRegularRoom(
+  cls: any,
+  day: string,
+  roomAllocations: Record<string, any>,
+  scheduledResults: any[]
+) {
+  const timeBlocks = ['Morning', 'Afternoon'];
+
+  for (const block of timeBlocks) {
+    const availableRoom = roomAllocations[day][block].rooms.find((r: any) => r.available);
+    if (availableRoom) {
+      const startTime = new Date(`1970-01-01T${block === 'Morning' ? '08:30' : '12:00'}:00`);
+      const endTime = new Date(`1970-01-01T${block === 'Morning' ? '11:30' : '15:00'}:00`);
+
+      await prisma.class.update({
+        where: { id: cls.id },
+        data: {
+          status: "SCHEDULED",
+          roomId: availableRoom.id,
+          dayOfWeek: day,
+          startTime,
+          endTime
+        }
+      });
+
+      scheduledResults.push(cls.id);
+      availableRoom.available = false;
+      return true;
+    }
+  }
+  return false;
 }

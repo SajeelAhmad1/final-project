@@ -102,6 +102,7 @@ model Class {
   startTime   DateTime?
   endTime     DateTime?
   dayOfWeek   String?
+  preferredDay String?
   status      String     @default("UNSCHEDULED")
   recurring   Boolean    @default(true)
   createdAt   DateTime   @default(now())

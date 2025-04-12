@@ -10,15 +10,21 @@ export default function TimetableManagementPage() {
   const [data, setData] = useState<{
     unscheduledClasses: any[];
     scheduledClasses: any[];
-    rooms: any[];
-  }>({ unscheduledClasses: [], scheduledClasses: [], rooms: [] });
+  }>({ unscheduledClasses: [], scheduledClasses: [] });
   
+  const [rooms, setRooms] = useState<any[]>([]);
   const [sessions, setSessions] = useState<any[]>([]);
 
-  const fetchData = async () => {
+  const fetchClasses = async () => {
     const res = await fetch('/api/classes');
-    const newData = await res.json();
-    setData(newData);
+    const classData = await res.json();
+    setData(classData);
+  };
+
+  const fetchRooms = async () => {
+    const res = await fetch('/api/rooms');
+    const roomsData = await res.json();
+    setRooms(roomsData);
   };
 
   const fetchSessions = async () => {
@@ -28,7 +34,8 @@ export default function TimetableManagementPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchClasses();
+    fetchRooms();
     fetchSessions();
   }, []);
 
@@ -39,16 +46,16 @@ export default function TimetableManagementPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
           <SessionSectionManager initialSessions={sessions} />
-          <ClassForm onSuccess={fetchData} />
+          <ClassForm onSuccess={fetchClasses} />
           <TimetableGenerator 
             unscheduledClasses={data.unscheduledClasses} 
-            rooms={data.rooms}
-            onGenerate={fetchData}
+            rooms={rooms}
+            onGenerate={fetchClasses}
           />
         </div>
         
         <div className="lg:col-span-2">
-          <TimetableDisplay classes={data.scheduledClasses} />
+          <TimetableDisplay rooms={rooms} classes={data.scheduledClasses} />
         </div>
       </div>
     </div>

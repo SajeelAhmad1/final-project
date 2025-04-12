@@ -3,6 +3,8 @@
 import { useState } from 'react';
 
 export default function TimetableDisplay({ classes, rooms }: { classes: any[], rooms: any[] }) {
+  console.log(classes)
+  console.log(rooms)
   const [selectedDay, setSelectedDay] = useState('Monday');
   const [viewMode, setViewMode] = useState<'room' | 'day'>('day');
   
@@ -13,7 +15,7 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
   ];
 
   // Room-wise view data
-  const roomSchedule = rooms.map(room => {
+  const roomSchedule = rooms && rooms.map(room => {
     const roomClasses = classes.filter(c => c.roomId === room.id);
     return {
       room,
@@ -30,21 +32,24 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
   });
 
   // Day-wise view data
-  const daySchedule = days.map(day => {
-    const dayClasses = classes.filter(c => c.dayOfWeek === day);
-    return {
-      day,
-      rooms: rooms.map(room => ({
+const daySchedule = days.map(day => {
+  const dayClasses = classes.filter(c => c.dayOfWeek === day);
+  return {
+    day,
+    rooms: rooms.map(room => {
+      const roomClasses = dayClasses.filter(c => c.roomId === room.id);
+      return {
         room,
-        morningClass: dayClasses.find(c => 
-          c.roomId === room.id && new Date(c.startTime).getHours() < 12
+        morningClass: roomClasses.find(c => 
+          new Date(c.startTime).getHours() < 12
         ),
-        afternoonClass: dayClasses.find(c => 
-          c.roomId === room.id && new Date(c.startTime).getHours() >= 12
+        afternoonClass: roomClasses.find(c => 
+          new Date(c.startTime).getHours() >= 12
         )
-      }))
-    };
-  });
+      };
+    })
+  };
+});
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">
@@ -95,45 +100,45 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
               <div key={index} className="space-y-4">
                 <h3 className="font-medium text-lg">{dayData.day}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  {dayData.rooms.map((roomSchedule, roomIndex) => (
-                    <div key={roomIndex} className="border rounded-lg p-3">
-                      <h4 className="font-medium mb-2">
-                        {roomSchedule.room.name} ({roomSchedule.room.type})
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="bg-gray-50 p-2 rounded">
-                          <p className="text-sm font-medium">Morning (8:30-11:30)</p>
-                          {roomSchedule.morningClass ? (
-                            <div className="mt-1">
-                              <p>{roomSchedule.morningClass.course?.name}</p>
-                              <p className="text-sm text-gray-600">
-                                {roomSchedule.morningClass.section?.name 
-                                  ? `Section ${roomSchedule.morningClass.section.name}` 
-                                  : ''}
-                              </p>
-                            </div>
-                          ) : (
-                            <p className="text-gray-400 text-sm">Available</p>
-                          )}
-                        </div>
-                        <div className="bg-gray-50 p-2 rounded">
-                          <p className="text-sm font-medium">Afternoon (12:00-15:00)</p>
-                          {roomSchedule.afternoonClass ? (
-                            <div className="mt-1">
-                              <p>{roomSchedule.afternoonClass.course?.name}</p>
-                              <p className="text-sm text-gray-600">
-                                {roomSchedule.afternoonClass.section?.name 
-                                  ? `Section ${roomSchedule.afternoonClass.section.name}` 
-                                  : ''}
-                              </p>
-                            </div>
-                          ) : (
-                            <p className="text-gray-400 text-sm">Available</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                {dayData.rooms.map((roomData, roomIndex) => (
+  <div key={roomIndex} className="border rounded-lg p-3">
+    <h4 className="font-medium mb-2">
+      {roomData.room.name} ({roomData.room.type})
+    </h4>
+    <div className="space-y-3">
+      <div className="bg-gray-50 p-2 rounded">
+        <p className="text-sm font-medium">Morning (8:30-11:30)</p>
+        {roomData.morningClass ? (
+          <div className="mt-1">
+            <p>{roomData.morningClass.course?.name}</p>
+            <p className="text-sm text-gray-600">
+              {roomData.morningClass.section?.name 
+                ? `Section ${roomData.morningClass.section.name}` 
+                : ''}
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">Available</p>
+        )}
+      </div>
+      <div className="bg-gray-50 p-2 rounded">
+        <p className="text-sm font-medium">Afternoon (12:00-15:00)</p>
+        {roomData.afternoonClass ? (
+          <div className="mt-1">
+            <p>{roomData.afternoonClass.course?.name}</p>
+            <p className="text-sm text-gray-600">
+              {roomData.afternoonClass.section?.name 
+                ? `Section ${roomData.afternoonClass.section.name}` 
+                : ''}
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">Available</p>
+        )}
+      </div>
+    </div>
+  </div>
+))}
                 </div>
               </div>
             ))}
@@ -141,7 +146,7 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
       ) : (
         // Room-wise View
         <div className="space-y-6">
-          {roomSchedule.map((roomData, index) => (
+          {roomSchedule && roomSchedule.map((roomData, index) => (
             <div key={index} className="border rounded-lg overflow-hidden">
               <div className="bg-gray-50 p-3 border-b">
                 <h3 className="font-medium">

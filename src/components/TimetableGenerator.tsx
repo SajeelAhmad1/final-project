@@ -19,29 +19,29 @@ export default function TimetableGenerator({
     reset?: number;
     error?: string;
   } | null>(null);
-
+  const [alerts, setAlerts] = useState<{type: 'success'|'error'|'warning', message: string}[]>([]);
   const handleGenerate = async () => {
     setIsGenerating(true);
-    setResult(null);
+    setAlerts([]);
     
     try {
-      const response = await fetch('/api/timetable/generate', {
-        method: 'POST'
-      });
+      const response = await fetch('/api/timetable/generate', { method: 'POST' });
       const data = await response.json();
       
       if (!response.ok) throw new Error(data.error || 'Generation failed');
       
-      setResult({
-        success: true,
-        scheduled: data.scheduledCount
-      });
+      // Show success and any alerts
+      setAlerts([
+        { type: 'success', message: data.message },
+        ...data.alerts.map((a: string) => ({ type: 'warning', message: a }))
+      ]);
+      
       onGenerate();
     } catch (error) {
-      setResult({
-        success: false,
-        error: error instanceof Error ? error.message : 'Generation failed'
-      });
+      setAlerts([{ 
+        type: 'error', 
+        message: error instanceof Error ? error.message : 'Generation failed' 
+      }]);
     } finally {
       setIsGenerating(false);
     }
@@ -126,6 +126,19 @@ export default function TimetableGenerator({
           ) : (
             <p>Error: {result.error}</p>
           )}
+        </div>
+      )}
+      {alerts.length > 0 && (
+        <div className="space-y-2">
+          {alerts.map((alert, i) => (
+            <div key={i} className={`p-3 rounded-md ${
+              alert.type === 'success' ? 'bg-green-50 text-green-800' :
+              alert.type === 'warning' ? 'bg-yellow-50 text-yellow-800' :
+              'bg-red-50 text-red-800'
+            }`}>
+              {alert.message}
+            </div>
+          ))}
         </div>
       )}
     </div>
