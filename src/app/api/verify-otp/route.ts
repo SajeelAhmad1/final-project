@@ -4,7 +4,7 @@ import { successResponse, errorResponse } from "../../../utils/responseHelper";
 import { ErrorMessages } from "@/utils/errorMessages";
 
 export async function POST(req: NextRequest) {
-  const { email, otp } = await req.json();
+  const { email, otp, role } = await req.json();
 
   if (!email || !otp) {
     return errorResponse(ErrorMessages.emailOtpRequired, 400);
@@ -45,11 +45,13 @@ export async function POST(req: NextRequest) {
         },
         update: {
           verified: true,
+          
         },
         create: {
           email: email,
           verified: true,
-          password: ""
+          password: "",
+          role: role.toUpperCase()
         },
       });
     } else {

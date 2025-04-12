@@ -8,6 +8,8 @@ import Image from "next/image";
 import { Pencil } from "lucide-react";
 
 type StudentProfile = {
+  firstName: string;
+  lastName: string;
   rollNumber: string;
   batch: string;
   department: string;
@@ -25,6 +27,8 @@ const StudentProfileForm: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<StudentProfile>({
+    firstName: "",
+    lastName: "",
     rollNumber: "",
     batch: "",
     department: "",
@@ -86,7 +90,7 @@ const StudentProfileForm: React.FC = () => {
       }
 
       const method = session?.user?.isProfileComplete ? "PUT" : "POST";
-      const response = await fetch("/api/student-profile", {
+      const response = await fetch("/api/profile/student-profile", {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedProfile),
@@ -148,6 +152,30 @@ const StudentProfileForm: React.FC = () => {
               className="hidden"
             />
           </div>
+        </div>
+
+        {/* Personal Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="md:col-span-2 text-xl font-semibold">Personal Information</h2>
+          
+          {[
+            { label: "First Name", name: "firstName", type: "text", required: true },
+            { label: "Last Name", name: "lastName", type: "text", required: true },
+          ].map(field => (
+            <div key={field.name}>
+              <label className="block text-sm font-medium text-gray-700">
+                {field.label} {field.required && "*"}
+              </label>
+              <input
+                type={field.type}
+                name={field.name}
+                value={profile[field.name as keyof StudentProfile] || ""}
+                onChange={handleChange}
+                required={field.required}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+            </div>
+          ))}
         </div>
 
         {/* Academic Information */}

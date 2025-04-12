@@ -5,6 +5,7 @@ import { Formik, Form, Field } from "formik";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 function validateEmail(value: string) {
   let error;
@@ -17,8 +18,14 @@ function validateEmail(value: string) {
 }
 
 export default function ClientLoginForm() {
-  const router = useRouter();
   const [error, setError] = useState("");
+  const router = useRouter();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    setUserRole(pathParts[pathParts.length - 1] || null);
+  }, []);
 
   // Helper function to safely extract error messages
   const getErrorMessage = (err: any): string => {
@@ -81,7 +88,7 @@ export default function ClientLoginForm() {
                 
               toast.success(successMessage);
               router.push(
-                `./verification?email=${encodeURIComponent(values.email)}`
+                `/verification/${userRole}?email=${encodeURIComponent(values.email)}`
               );
             }
           } catch (err: any) {

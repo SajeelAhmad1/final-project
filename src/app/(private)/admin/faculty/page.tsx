@@ -25,9 +25,9 @@ export default function FacultyPage() {
   const [designationFilter, setDesignationFilter] = useState('');
 
   // Redirect if not admin
-  if (status === 'unauthenticated') {
-    redirect('/login');
-  }
+  // if (status === 'unauthenticated') {
+  //   redirect('/login');
+  // }
 
   useEffect(() => {
     const fetchFaculties = async () => {

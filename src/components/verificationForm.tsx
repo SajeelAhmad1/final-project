@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import OtpInput from "react-otp-input";
 import { otpVerification, sendOtp } from "@/lib/actions/auth";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 function VerificationForm() {
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
@@ -13,6 +14,12 @@ function VerificationForm() {
   const searchParams: any = useSearchParams();
   const email = searchParams.get("email") || "";
   const [otp, setOtp] = useState("");
+  const [userRole, setUserRole] = useState<string | null>(null);
+  
+    useEffect(() => {
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      setUserRole(pathParts[pathParts.length - 1] || null);
+    }, []);
 
   const handleChange = async (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "");
@@ -25,6 +32,7 @@ function VerificationForm() {
         const result = await otpVerification({
           email: email.toString(),
           otp: numericValue,
+          role: userRole
         });
         if (result.status === 200) {
           toast.dismiss();
@@ -32,7 +40,7 @@ function VerificationForm() {
           toast.success(result?.data?.message);
           setIsVerifying(false);
           router.push(
-            `/password?email=${encodeURIComponent(email.toString())}`
+            `/password/${userRole}?email=${encodeURIComponent(email.toString())}`
           );
           return;
         }

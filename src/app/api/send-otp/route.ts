@@ -25,9 +25,7 @@ export async function POST(req: NextRequest) {
     });
     console.log("user", user)
   
-    if (user && user.role === "CUSTOMER") {
-      return errorResponse(ErrorMessages.customerFound, 404)
-    } else if(user) {
+    if(user) {
       return errorResponse(ErrorMessages.userFound, 404);
     }
   

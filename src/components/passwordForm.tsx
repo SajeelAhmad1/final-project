@@ -8,12 +8,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Loader } from "./shared/loader";
+import { useEffect } from "react";
 
 function ClientPasswordForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    setUserRole(pathParts[pathParts.length - 1] || null);
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -66,7 +73,7 @@ function ClientPasswordForm() {
           toast.success("🎉 Password set successfully!");
           setLoading(false);
           router.push(
-            `/profile?email=${encodeURIComponent(email.toString())}`
+            `/profile/?email=${encodeURIComponent(email.toString())}&userRole=${userRole}`
           );
         }
         setLoading(false);
@@ -102,11 +109,10 @@ function ClientPasswordForm() {
             value={formik.values.password}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full border p-2 py-4 px-6 rounded-[6.56px] text-sm focus:border-blue-500  focus:outline-none ${
-              formik.touched.password && formik.errors.password
+            className={`w-full border p-2 py-4 px-6 rounded-[6.56px] text-sm focus:border-blue-500  focus:outline-none ${formik.touched.password && formik.errors.password
                 ? "border-red-500"
                 : "border-blue-500"
-            }`}
+              }`}
           />
           <div
             className="absolute right-3 top-6 transform -translate-y-1/2 cursor-pointer"
@@ -141,11 +147,10 @@ function ClientPasswordForm() {
             value={formik.values.confirmPassword}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full p-2 border px-6 py-4 rounded-[6.56px] text-sm  focus:border-blue-500 focus:outline-none ${
-              formik.touched.confirmPassword && formik.errors.confirmPassword
+            className={`w-full p-2 border px-6 py-4 rounded-[6.56px] text-sm  focus:border-blue-500 focus:outline-none ${formik.touched.confirmPassword && formik.errors.confirmPassword
                 ? "border-red-500"
                 : "border-blue-500"
-            }`}
+              }`}
           />
           <div
             className="absolute right-3 top-6 transform -translate-y-1/2 cursor-pointer"
@@ -187,4 +192,3 @@ function ClientPasswordForm() {
 export default function WrappedClientPasswordForm() {
   return <ClientPasswordForm />;
 }
- 

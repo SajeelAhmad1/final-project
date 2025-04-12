@@ -36,6 +36,8 @@ model Faculty {
   lastName   String
   department  String
   designation String
+  imageUrl    String?
+  phone       String?
   user        User      @relation(fields: [userId], references: [id]) // Only here
   userId      String    @unique
   courses     Course[]
@@ -93,13 +95,34 @@ model Class {
   id          String     @id @default(uuid())
   course      Course     @relation(fields: [courseId], references: [id])
   courseId    String
+  section     Section?   @relation(fields: [sectionId], references: [id])
+  sectionId   String?
   room        Room?      @relation(fields: [roomId], references: [id])
   roomId      String?
-  startTime   DateTime
-  endTime     DateTime
-  dayOfWeek   String
+  startTime   DateTime?
+  endTime     DateTime?
+  dayOfWeek   String?
+  status      String     @default("UNSCHEDULED")
   recurring   Boolean    @default(true)
   createdAt   DateTime   @default(now())
+}
+
+model Session {
+  id          String     @id @default(uuid())
+  year        String     @unique // e.g., "2021"
+  sections    Section[]
+  createdAt   DateTime   @default(now())
+}
+
+model Section {
+  id          String     @id @default(uuid())
+  name        String     // e.g., "A", "B", "C"
+  session     Session    @relation(fields: [sessionId], references: [id])
+  sessionId   String
+  classes     Class[]
+  createdAt   DateTime   @default(now())
+  
+  @@unique([name, sessionId])
 }
 
 // ====== ROOM & RESOURCE MANAGEMENT ======
@@ -117,7 +140,7 @@ model Room {
 enum RoomType {
   LECTURE_HALL
   LAB
-  SEMINAR_ROOM
+  EXAM_HALL
 }
 
 model Resource {

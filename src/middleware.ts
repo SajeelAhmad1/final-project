@@ -63,7 +63,7 @@ export async function middleware(req: NextRequest) {
   if (isProtectedPath) {
     if (token.isProfileComplete === false) {
       const profileUrl = new URL(
-        `/profile?email=${encodeURIComponent(email)}`,
+        `/profile/?email=${encodeURIComponent(email)}`,
         req.url
       );
       return NextResponse.redirect(profileUrl);

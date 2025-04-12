@@ -22,6 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Create the course
     const newCourse = await prisma.course.create({
       data: {
         code: body.code,
@@ -31,7 +32,11 @@ export async function POST(request: Request) {
         facultyId: body.facultyId || null
       },
       include: {
-        faculty: true // Include faculty details in the response
+        faculty: {
+          include: {
+            user: true // Include the associated user to get the email
+          }
+        }
       }
     });
 
@@ -39,6 +44,7 @@ export async function POST(request: Request) {
     if (body.facultyId && newCourse.faculty) {
       try {
         const faculty = newCourse.faculty;
+        const facultyEmail = faculty.user.email;
         
         // Create transporter using app password authentication
         const transporter = nodemailer.createTransport({
@@ -51,7 +57,7 @@ export async function POST(request: Request) {
         
         await transporter.sendMail({
           from: `"Course Management System" <${EMAIL_USER}>`,
-          to: faculty.email,
+          to: facultyEmail,
           subject: `New Course Assignment: ${newCourse.code} - ${newCourse.name}`,
           html: `
           <div style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; padding: 20px; text-align: center; border-radius: 10px;">
@@ -61,6 +67,9 @@ export async function POST(request: Request) {
               <div style="margin-top: 20px; padding: 20px; background-color: #ffffff; border-radius: 10px; border: 2px solid #2290F3;">
                 <h2 style="font-size: 20px; color: #2290F3; margin: 0;">New Course Assignment</h2>
                 <p style="font-size: 16px; color: #555555; margin-top: 20px;">
+                  Dear ${faculty.firstName} ${faculty.lastName},
+                </p>
+                <p style="font-size: 16px; color: #555555;">
                   You have been assigned to teach the following course:
                 </p>
                 <div style="margin: 10px 0; padding: 10px; border-radius: 5px; background-color: #f0f4f8; display: inline-block;">
@@ -80,6 +89,16 @@ export async function POST(request: Request) {
             </div>
           `,
         });
+
+        // Also create a notification in the database
+        await prisma.notification.create({
+          data: {
+            userId: faculty.userId,
+            title: `New Course Assignment: ${newCourse.code}`,
+            message: `You have been assigned to teach ${newCourse.name} (${newCourse.code})`,
+          }
+        });
+
       } catch (emailError) {
         console.error('Error sending assignment email:', emailError);
         // Don't fail the whole request if email fails

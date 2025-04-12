@@ -25,7 +25,6 @@ export async function GET() {
         user: {
           select: {
             email: true,
-            name: true
           }
         }
       }
@@ -54,6 +53,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { 
+      firstName,
+      lastName,
       rollNumber,
       batch,
       department,
@@ -78,6 +79,8 @@ export async function POST(request: NextRequest) {
     // Create new profile
     const studentProfile = await prisma.student.create({
       data: {
+        firstName,
+        lastName,
         rollNumber,
         batch,
         department,

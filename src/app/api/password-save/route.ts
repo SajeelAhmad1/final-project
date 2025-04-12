@@ -7,7 +7,7 @@ import { ErrorMessages } from "@/utils/errorMessages";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, newPassword, confirmPassword } = await req.json();
+    const { email, newPassword, confirmPassword, role } = await req.json();
 
     // Validate input fields
     if (!email) return errorResponse(ErrorMessages.emailRequired, 400);
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       data: {
         password: hashedNewPassword,
         isPasswordSet: true,
-        role: "STUDENT",
+        role: role,
       },
     });
 
