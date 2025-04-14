@@ -112,7 +112,7 @@ const StudentProfileForm: React.FC = () => {
       });
 
       if (!session?.user?.isProfileComplete) {
-        router.push("/");
+        router.push("/student/courses/register");
       }
     } catch (error: any) {
       console.error("Error saving profile:", error);

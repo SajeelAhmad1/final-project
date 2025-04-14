@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
 import Image from "next/image";
+import { ROLE } from "@/common/constant/apis-urls";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -28,6 +29,7 @@ function ClientLoginForm() {
   const searchParams = useSearchParams();
   const emailFromParams = searchParams?.get("email") || "";
   const from = searchParams?.get("from");
+  const registerType = searchParams?.get("type"); // 'student' or 'faculty'
   const [loading, setLoading] = useState(true);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -44,9 +46,14 @@ function ClientLoginForm() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      // Determine callback URL based on registration type
+      const callbackUrl = registerType 
+        ? `/register/${registerType}`
+        : from || "/";
+
       const result = await signIn("google", {
         redirect: false,
-        callbackUrl: from || "/"
+        callbackUrl
       });
   
       if (result?.error) {
@@ -76,17 +83,20 @@ function ClientLoginForm() {
       return;
     }
 
-    if (user.role === "ADMIN") {
+    if (user.role === ROLE.ADMIN) {
       router.push("/admin");
-    } else if (user.role === "VENDOR") {
-      router.push("/vendor");
-    } else if (user.role === null && user.token) {
+    } else if (user.role === ROLE.FACULTY) {
+      router.push("/faculty");
+    } else if (user.role === ROLE.STUDENT) {
+      router.push("/student");
+    } else if (user.role === null ) {
       if (!user.isPasswordSet) {
         router.push(`/password?email=${encodeURIComponent(user.email)}`);
       } else if (!user.isProfileComplete) {
-        router.push(`/doctor/profile?email=${encodeURIComponent(user.email)}`);
+        // Determine profile completion route based on registration type
+        router.push(`/profile?email=${encodeURIComponent(user.email)}`);
       } else {
-        router.push("/");
+        router.push(`/profile?email=${encodeURIComponent(emailFromParams)}`);
       }
     } else {
       router.push(from || "/");
@@ -111,6 +121,7 @@ function ClientLoginForm() {
               password: values.password,
               isSettingPassword: "false",
               callbackUrl: "/",
+              role: registerType === 'faculty' ? ROLE.FACULTY : ROLE.STUDENT,
             });
             setSubmitting(false);
         
@@ -217,7 +228,7 @@ function ClientLoginForm() {
         )}
       </Formik>
 
-      <div className="py-3 flex items-center justify-center">
+      {/* <div className="py-3 flex items-center justify-center">
         <div className="border-t-[1px] border-solid border-black flex-grow"></div>
         <span className="mx-2 text-black text-base font-normal">Or</span>
         <div className="border-t-[1px] border-solid border-black flex-grow"></div>
@@ -244,12 +255,12 @@ function ClientLoginForm() {
             <span>Continue with Google</span>
           </>
         )}
-      </button>
+      </button> */}
 
       <p className="text-center text-black leading-[25.48px] pt-3">
         Do not have an account?{" "}
         <Link
-          href="./register"
+          href={registerType ? `/register/${registerType}` : "/register"}
           className="text-black cursor-pointer text-base font-normal"
         >
           Sign Up

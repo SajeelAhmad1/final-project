@@ -4,21 +4,21 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  Building, 
-  Clock, 
-  Calendar, 
-  Bell, 
-  Settings, 
-  Menu, 
-  X,
   Home,
-  BarChart
+  BookOpen,
+  Clock,
+  Calendar,
+  Bell,
+  Menu,
+  X,
+  User,
+  GraduationCap,
+  BarChart,
+  ClipboardList,
+  CreditCard
 } from 'lucide-react';
 
-export default function AdminLayout({
+export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode
@@ -27,27 +27,18 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'Students', href: '/admin/students', icon: GraduationCap },
-    { name: 'Faculty', href: '/admin/faculty', icon: Users },
-    { name: 'Courses', href: '/admin/courses', icon: BookOpen },
-    { name: 'Sessions', href: '/admin/sessions', icon: BookOpen },
-    { name: 'Classes', href: '/admin/classes', icon: Clock },
-    { name: 'Rooms', href: '/admin/rooms', icon: Building },
-    { name: 'Time Table', href: '/admin/timetable', icon: Building },
-    { name: 'Enrollments', href: '/admin/enrollments', icon: Building },
-    { name: 'Exams', href: '/admin/exams', icon: Calendar },
-    { name: 'Leaves', href: '/admin/leaves', icon: Calendar },
-    { name: 'Notifications', href: '/admin/notifications', icon: Bell },
-    { name: 'Reports', href: '/admin/reports', icon: BarChart },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Dashboard', href: '/student', icon: Home },
+    { name: 'My Courses', href: '/student/courses', icon: BookOpen },
+    { name: 'Class Schedule', href: '/student/schedule', icon: Clock },
+    { name: 'Exams', href: '/student/exams', icon: Calendar },
+    { name: 'Profile', href: '/student/profile', icon: User },
   ];
  
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white z-50 px-4 py-2 border-b flex justify-between items-center">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
+        <h1 className="text-xl font-bold">Student Portal</h1>
         <button 
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
@@ -102,7 +93,7 @@ export default function AdminLayout({
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow border-r border-gray-200 bg-white pt-5 pb-4 overflow-y-auto">
           <div className="flex items-center flex-shrink-0 px-4">
-            <h1 className="text-xl font-bold">Admin Panel</h1>
+            <h1 className="text-xl font-bold">Student Portal</h1>
           </div>
           <div className="mt-8 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-1">

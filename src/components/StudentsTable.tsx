@@ -70,6 +70,7 @@ export default function StudentsTable({
       <ArrowDown className="w-4 h-4 inline ml-1" />
     );
   };
+  const router = useRouter();
 
   return (
     <div className="mt-6 flow-root">
@@ -117,8 +118,9 @@ export default function StudentsTable({
             <tbody className="bg-white">
               {students?.map((student) => (
                 <tr
+                onClick={()=>router.push(`/admin/students/${student.id}`)}
                   key={student.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                  className="cursor-pointer w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg hover:bg-gray-100"
                 >
                   <td className="whitespace-nowrap px-4 py-3">
                     {student.rollNumber}

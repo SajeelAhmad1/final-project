@@ -113,56 +113,120 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
-        // Check if user exists in your database
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          include: { student: true },
+    // Update the signIn callback in auth-options.ts
+async signIn({ user, account, profile, request }) {
+  // Get the role from the callback URL
+  const url = new URL(request.url);
+  const role = url.pathname.includes('/register/faculty') 
+    ? ROLE.FACULTY 
+    : ROLE.STUDENT;
+
+  if (account?.provider === "google") {
+    try {
+      // Check if user exists in your database
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        include: { student: true, faculty: true },
+      });
+
+      if (!existingUser) {
+        // Create new user for Google sign-in with the determined role
+        const userData: any = {
+          email: user.email,
+          verified: true,
+          loginType: "GOOGLE",
+          role: role,
+        };
+
+        if (role === ROLE.STUDENT) {
+          // Generate a temporary roll number for initial signup
+          const tempRollNumber = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+          
+          userData.student = {
+            create: {
+              firstName: profile?.given_name || user.firstName,
+              lastName: profile?.family_name || user.lastName,
+              rollNumber: tempRollNumber,
+              batch: 'TEMP', // Temporary value
+              department: 'TEMP', // Temporary value
+              phone: 'TEMP', // Temporary value
+            }
+          };
+        } else if (role === ROLE.FACULTY) {
+          userData.faculty = {
+            create: {
+              firstName: profile?.given_name || user.firstName,
+              lastName: profile?.family_name || user.lastName,
+              department: 'TEMP', // Temporary value
+              designation: 'TEMP', // Temporary value
+            }
+          };
+        }
+
+        const newUser = await prisma.user.create({
+          data: userData,
+          include: { student: true, faculty: true },
         });
-    
-        if (!existingUser) {
-          // Create new user for Google sign-in
-          const newUser = await prisma.user.create({
-            data: {
-              email: user.email,
-              verified: true,
-              loginType: "GOOGLE",
-              role: ROLE.STUDENT,
-              student: {
-                create: {
-                  firstName: profile?.given_name || user.firstName,
-                  lastName: profile?.family_name || user.lastName,
-                  // You can add more default profile fields if needed
-                }
-              }
-            },
-            include: { student: true },
-          });
-          user.id = newUser.id;
+        
+        user.id = newUser.id;
+        if (role === ROLE.STUDENT) {
           user.student = newUser.student;
-          user.isProfileComplete = !!newUser.student;
+          user.isProfileComplete = false; // Mark as incomplete since we used temp values
         } else {
-          user.id = existingUser.id;
+          user.faculty = newUser.faculty;
+          user.isProfileComplete = false; // Mark as incomplete since we used temp values
+        }
+      } else {
+        user.id = existingUser.id;
+        if (existingUser.role === ROLE.STUDENT) {
           user.student = existingUser.student;
           user.isProfileComplete = !!existingUser.student;
-          
-          // If user exists but doesn't have a profile, create one
-          if (!existingUser.student) {
-            const profile = await prisma.student.create({
-              data: {
-                userId: existingUser.id,
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
-              }
-            });
-            user.student = profile;
-            user.isProfileComplete = true;
-          }
+        } else {
+          user.faculty = existingUser.faculty;
+          user.isProfileComplete = !!existingUser.faculty;
+        }
+
+        // If user exists but doesn't have a profile, create one with temp values
+        if (existingUser.role === ROLE.STUDENT && !existingUser.student) {
+          const tempRollNumber = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+          const profile = await prisma.student.create({
+            data: {
+              userId: existingUser.id,
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+              rollNumber: tempRollNumber,
+              batch: 'TEMP',
+              department: 'TEMP',
+              phone: 'TEMP',
+            }
+          });
+          user.student = profile;
+          user.isProfileComplete = false;
+        } else if (existingUser.role === ROLE.FACULTY && !existingUser.faculty) {
+          const profile = await prisma.faculty.create({
+            data: {
+              userId: existingUser.id,
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+              department: 'TEMP',
+              designation: 'TEMP',
+            }
+          });
+          user.faculty = profile;
+          user.isProfileComplete = false;
         }
       }
+      
+      // Set the role on the user object
+      user.role = role;
       return true;
-    },
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+      return false;
+    }
+  }
+  return true;
+},
     async jwt({ token, user, account }) {
       // Initial sign-in
       if (account && user) {

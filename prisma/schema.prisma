@@ -66,6 +66,9 @@ model Student {
   enrollments Enrollment[]
   seatings    Seating[]
   createdAt   DateTime  @default(now())
+
+  @@index([rollNumber])
+  @@index([department, batch])
 }
 
 model Otp {
@@ -86,7 +89,7 @@ model Course {
   faculty      Faculty?   @relation(fields: [facultyId], references: [id])
   facultyId    String?
   classes      Class[]
-  enrollments  Enrollment[]
+  enrollments Enrollment[]
   exams        Exam[]
   createdAt    DateTime   @default(now())
 }
@@ -168,6 +171,7 @@ model Exam {
   createdAt   DateTime   @default(now())
 }
 
+// prisma/schema.prisma
 model Seating {
   id          String     @id @default(uuid())
   exam        Exam       @relation(fields: [examId], references: [id])
@@ -175,6 +179,9 @@ model Seating {
   student     Student    @relation(fields: [studentId], references: [id])
   studentId   String
   seatNumber  String
+  batch       String     // Add these fields explicitly
+  department  String
+  merit       Int?
   createdAt   DateTime   @default(now())
 }
 
@@ -211,11 +218,15 @@ model Notification {
 
 // ====== STUDENT ENROLLMENTS ======
 model Enrollment {
-  id          String     @id @default(uuid())
-  student     Student    @relation(fields: [studentId], references: [id])
+  id          String   @id @default(uuid())
+  student     Student  @relation(fields: [studentId], references: [id])
   studentId   String
-  course      Course     @relation(fields: [courseId], references: [id])
+  course      Course   @relation(fields: [courseId], references: [id])
   courseId    String
   semester    String
-  createdAt   DateTime   @default(now())
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([studentId, courseId, semester])
 }

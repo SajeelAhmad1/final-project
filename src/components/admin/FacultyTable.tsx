@@ -1,5 +1,5 @@
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
 interface Faculty {
   id: string;
   department: string;
@@ -15,6 +15,7 @@ interface FacultyTableProps {
 }
 
 export default function FacultyTable({ faculties }: FacultyTableProps) {
+  const router = useRouter();
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       {faculties.length === 0 ? (
@@ -44,7 +45,9 @@ export default function FacultyTable({ faculties }: FacultyTableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {faculties.map((faculty) => (
-              <tr key={faculty.id}>
+              <tr 
+              onClick={()=>router.push(`/admin/faculty${faculty.id}`)}
+              key={faculty.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {faculty.user.email}
                 </td>
