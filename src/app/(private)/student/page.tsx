@@ -105,83 +105,85 @@ export default function StudentDashboard() {
     activities: true,
     events: true
   });
-  const {data: session} = useSession();
   
+  const { data: session, status } = useSession();
   const [recentActivities, setRecentActivities] = useState<ActivityItemProps[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<EventItemProps[]>([]);
 
   // Initialize with default values
-const [stats, setStats] = useState({
-  courses: 0,
-  classesToday: 0,
-  pendingAssignments: 0,
-  averageGrade: '0.0'
-});
+  const [stats, setStats] = useState({
+    courses: 0,
+    classesToday: 0,
+    // pendingAssignments: 0,
+    // averageGrade: '0.0'
+  });
 
-const fetchData = async () => {
-  try {
-    setLoading({
-      courses: true,
-      classes: true,
-      assignments: true,
-      grades: true,
-      activities: true,
-      events: true
-    });
+  const fetchData = async () => {
+    if (status === 'loading' || !session?.user?.id) return;
 
-    const id = session?.user?.id;
-    console.log("here")
+    try {
+      setLoading({
+        courses: true,
+        classes: true,
+        assignments: true,
+        grades: true,
+        activities: true,
+        events: true
+      });
 
-    const [
-      coursesRes,
-      classesRes,
-      assignmentsRes,
-      gradesRes,
-      activitiesRes,
-      eventsRes
-    ] = await Promise.all([
-      fetch(`/api/courses/count/${id}`),
-      fetch('/api/classes/today'),
-      fetch('/api/student/assignments/pending'),
-      fetch('/api/student/grades/average'),
-      fetch('/api/student/activities/recent'),
-      fetch('/api/student/events/upcoming')
-    ]);
+      const [
+        coursesRes,
+        classesRes,
+        // assignmentsRes,
+        // gradesRes,
+        // activitiesRes,
+        // eventsRes
+      ] = await Promise.all([
+        fetch(`/api/enrollments?studentId=${session.user.id}`),
+        fetch('/api/classes/today'),
+        // fetch('/api/student/assignments/pending'),
+        // fetch('/api/student/grades/average'),
+        // fetch('/api/student/activities/recent'),
+        // fetch('/api/student/events/upcoming')
+      ]);
 
-    // Handle each response separately
-    const coursesData = await coursesRes.json();
-    const classesData = await classesRes.json();
-    const assignmentsData = await assignmentsRes.json();
-    const gradesData = await gradesRes.json();
-    const activitiesData = await activitiesRes.json();
-    const eventsData = await eventsRes.json();
+      // Handle each response separately
+      const coursesData = await coursesRes.json();
+      const classesData = await classesRes.json();
+      // const assignmentsData = await assignmentsRes.json();
+      // const gradesData = await gradesRes.json();
+      // const activitiesData = await activitiesRes.json();
+      // const eventsData = await eventsRes.json();
 
-    setStats({
-      courses: coursesData.count || 0,
-      classesToday: classesData.count || 0,
-      pendingAssignments: assignmentsData.count || 0,
-      averageGrade: gradesData.average?.toFixed(1) || '0.0'
-    });
+      // Check if coursesData is an array (like in EnrolledCoursesTable) or has a count property
+      const coursesCount = Array.isArray(coursesData) ? coursesData.length : coursesData.count || 0;
 
-    setRecentActivities(activitiesData);
-    setUpcomingEvents(eventsData);
-  } catch (error) {
-    console.error('Failed to fetch data:', error);
-  } finally {
-    setLoading({
-      courses: false,
-      classes: false,
-      assignments: false,
-      grades: false,
-      activities: false,
-      events: false
-    });
-  }
-};
+      setStats({
+        courses: coursesCount,
+        classesToday: classesData.count || 0,
+        // pendingAssignments: assignmentsData.count || 0,
+        // averageGrade: gradesData.average?.toFixed(1) || '0.0'
+      });
+
+      // setRecentActivities(activitiesData);
+      // setUpcomingEvents(eventsData);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setLoading({
+        courses: false,
+        classes: false,
+        assignments: false,
+        grades: false,
+        activities: false,
+        events: false
+      });
+    }
+  };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [session, status]); // Add session and status to dependencies
 
   const statCards = [
     { 
@@ -198,13 +200,15 @@ const fetchData = async () => {
     },
     { 
       title: "Pending Assignments", 
-      value: stats.pendingAssignments.toString(), 
+      // value: stats.pendingAssignments.toString(), 
+      value: 0,
       icon: <AlertCircle className="h-5 w-5" />,
       loading: loading.assignments
     },
     { 
       title: "Average Grade", 
-      value: stats.averageGrade, 
+      value: 0, 
+      // value: stats.averageGrade, 
       icon: <ClipboardList className="h-5 w-5" />,
       loading: loading.grades
     }
