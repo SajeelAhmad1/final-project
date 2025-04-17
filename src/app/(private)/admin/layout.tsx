@@ -3,20 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  Building, 
-  Clock, 
-  Calendar, 
-  Bell, 
-  Settings, 
-  Menu, 
+import {
+  Users,
+  GraduationCap,
+  BookOpen,
+  Building,
+  Clock,
+  Calendar,
+  Bell,
+  Settings,
+  Menu,
   X,
   Home,
   BarChart
 } from 'lucide-react';
+import Image from 'next/image';
+import logo from "@/assets/logo.png"
 
 export default function AdminLayout({
   children,
@@ -38,17 +40,14 @@ export default function AdminLayout({
     { name: 'Enrollments', href: '/admin/enrollments', icon: Building },
     { name: 'Exams', href: '/admin/exams', icon: Calendar },
     { name: 'Leaves', href: '/admin/leaves', icon: Calendar },
-    { name: 'Notifications', href: '/admin/notifications', icon: Bell },
-    { name: 'Reports', href: '/admin/reports', icon: BarChart },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
- 
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white z-50 px-4 py-2 border-b flex justify-between items-center">
         <h1 className="text-xl font-bold">Admin Panel</h1>
-        <button 
+        <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
         >
@@ -63,8 +62,8 @@ export default function AdminLayout({
       {/* Sidebar for mobile */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div 
-            className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity" 
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"
             onClick={() => setSidebarOpen(false)}
           ></div>
           <div className="fixed inset-y-0 left-0 pt-16 max-w-xs w-full bg-white shadow-lg z-50">
@@ -77,17 +76,17 @@ export default function AdminLayout({
                     href={item.href}
                     className={`
                       group flex items-center px-4 py-3 text-sm font-medium rounded-md
-                      ${isActive 
-                        ? 'bg-gray-100 text-blue-600' 
+                      ${isActive
+                        ? 'bg-gray-100 text-blue-600'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                     `}
                     onClick={() => setSidebarOpen(false)}
                   >
-                    <item.icon 
+                    <item.icon
                       className={`
                         mr-3 h-5 w-5 
                         ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}
-                      `} 
+                      `}
                     />
                     {item.name}
                   </Link>
@@ -102,7 +101,13 @@ export default function AdminLayout({
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow border-r border-gray-200 bg-white pt-5 pb-4 overflow-y-auto">
           <div className="flex items-center flex-shrink-0 px-4">
-            <h1 className="text-xl font-bold">Admin Panel</h1>
+            <Image
+              src={logo.src}
+              width={70}
+              height={70}
+              alt='logo'
+              className='mx-auto'
+            />
           </div>
           <div className="mt-8 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-1">
@@ -114,16 +119,16 @@ export default function AdminLayout({
                     href={item.href}
                     className={`
                       group flex items-center px-4 py-3 text-sm font-medium rounded-md
-                      ${isActive 
-                        ? 'bg-gray-100 text-blue-600' 
+                      ${isActive
+                        ? 'bg-gray-100 text-blue-600'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                     `}
                   >
-                    <item.icon 
+                    <item.icon
                       className={`
                         mr-3 h-5 w-5 
                         ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}
-                      `} 
+                      `}
                     />
                     {item.name}
                   </Link>

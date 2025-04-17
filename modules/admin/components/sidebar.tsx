@@ -22,7 +22,6 @@ const Sidebar = () => {
     { title: 'Leaves', icon: <Calendar size={20} />, path: '/admin/leaves' },
     { title: 'Notifications', icon: <Bell size={20} />, path: '/admin/notifications' },
     { title: 'Reports', icon: <BarChart size={20} />, path: '/admin/reports' },
-    { title: 'Settings', icon: <Settings size={20} />, path: '/admin/settings' },
   ];
 
   return (

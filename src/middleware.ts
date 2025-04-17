@@ -4,8 +4,8 @@ import { getToken } from "next-auth/jwt";
 
 // Define protected paths
 const protectedPaths = [
-  "/student",
-  "/faculty",
+  // "/student",
+  "/facultys",
 ];
 
 export async function middleware(req: NextRequest) {
@@ -49,7 +49,7 @@ export async function middleware(req: NextRequest) {
   const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
 
   if (isProtectedPath) {
-    if (token.isProfileComplete === false) {
+    if (token.isProfileComplete === true) {
       const profileUrl = new URL(
         `/profile/?email=${encodeURIComponent(email)}`,
         req.url
@@ -65,8 +65,8 @@ export async function middleware(req: NextRequest) {
 // Middleware configuration
 export const config = {
   matcher: [
-    "/student/:path*",
-    "/faculty/:path*",
+    // "/student/:path*",
+    "/facultys/:path*",
     "/.well-known/assetlinks.json",
   ],
 };

@@ -51,7 +51,7 @@ export default function CoursesList() {
         <h1 className="text-2xl font-bold">Courses</h1>
         <Link
           href="/admin/courses/add"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white px-4 py-2 rounded-md hover:bg-indigo-700"
         >
           Add New Course
         </Link>

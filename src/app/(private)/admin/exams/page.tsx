@@ -47,12 +47,12 @@ const Page = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Admin Exams Dashboard</h1>
+          <h1 className="text-2xl font-semibold">Admin Exams Dashboard</h1>
           <p className="text-gray-600">Manage exams, schedules, and seating plans.</p>
         </div>
         <button
           onClick={() => router.push("/admin/exams/schedule")}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white rounded hover:bg-blue-700 transition-colors"
         >
           Schedule New Exam
         </button>
@@ -79,7 +79,7 @@ const Page = () => {
       ) : (
         <div className="grid gap-4">
           {exams.map((exam) => (
-            <div key={exam.id} className="p-4 border rounded shadow-sm hover:shadow-md transition-shadow">
+            <div key={exam.id} className="p-4 bg-white border border-[gradient-to-b from-[#579FE1] to-[#1B8BF0]] rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <h3 className="font-medium text-lg">{exam.courseName}</h3>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 <div>
@@ -101,7 +101,7 @@ const Page = () => {
               </div>
               <button
                 onClick={() => router.push(`/admin/exams/${exam.id}/seating-plan`)}
-                className="mt-3 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-sm transition-colors"
+                className="mt-3 px-3 py-1.5 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white hover:bg-gray-200 rounded text-sm transition-colors"
               >
                 View Seating Plan
               </button>

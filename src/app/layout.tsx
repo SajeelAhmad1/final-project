@@ -2,9 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import type { Metadata } from "next";
 import "@/assets/style/globals.css";
-import { METADATA } from "../common/constant/metadata";
 import { poppins } from "@/common/styles/fonts";
-import { useEffect } from "react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -55,7 +55,7 @@ const Page = () => {
   useEffect(() => {
     const fetchFaculty = async () => {
       try {
-        const response = await fetch(`/api/admin/faculty/${facultyId}`);
+        const response = await fetch(`/api/faculty/${facultyId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch faculty");
         }

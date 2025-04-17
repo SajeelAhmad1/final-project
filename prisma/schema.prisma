@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ====== USER MANAGEMENT ======
 enum Role {
   ADMIN
   FACULTY
@@ -79,7 +78,6 @@ model Otp {
   expiresAt DateTime @map("expires_at")
 }
 
-// ====== COURSE & CLASS SCHEDULING ======
 model Course {
   id           String     @id @default(uuid())
   code         String     @unique
@@ -129,7 +127,6 @@ model Section {
   @@unique([name, sessionId])
 }
 
-// ====== ROOM & RESOURCE MANAGEMENT ======
 model Room {
   id          String     @id @default(uuid())
   name        String     @unique
@@ -156,7 +153,6 @@ model Resource {
   createdAt   DateTime   @default(now())
 }
 
-// ====== EXAM MANAGEMENT ======
 model Exam {
   id          String     @id @default(uuid())
   course      Course     @relation(fields: [courseId], references: [id])
@@ -171,7 +167,6 @@ model Exam {
   createdAt   DateTime   @default(now())
 }
 
-// prisma/schema.prisma
 model Seating {
   id          String     @id @default(uuid())
   exam        Exam       @relation(fields: [examId], references: [id])
@@ -185,7 +180,6 @@ model Seating {
   createdAt   DateTime   @default(now())
 }
 
-// ====== LEAVE & SUBSTITUTE MANAGEMENT ======
 model Leave {
   id          String     @id @default(uuid())
   faculty     Faculty    @relation("LeaveRequester", fields: [facultyId], references: [id])
@@ -205,7 +199,6 @@ enum LeaveStatus {
   REJECTED
 }
 
-// ====== NOTIFICATIONS ======
 model Notification {
   id          String     @id @default(uuid())
   user        User       @relation(fields: [userId], references: [id])
@@ -216,7 +209,6 @@ model Notification {
   createdAt   DateTime   @default(now())
 }
 
-// ====== STUDENT ENROLLMENTS ======
 model Enrollment {
   id          String   @id @default(uuid())
   student     Student  @relation(fields: [studentId], references: [id])

@@ -95,7 +95,7 @@ export default function TimetableGenerator({
               isResetting ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
-            {isResetting ? 'Resetting...' : 'Reset All'}
+            {isResetting ? 'Resetting...' : 'Reset'}
           </button>
           <button
             onClick={handleGenerate}

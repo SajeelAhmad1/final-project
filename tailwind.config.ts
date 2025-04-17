@@ -8,7 +8,7 @@ const config: Config = {
     "./modules/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [
-    'bg-[#F19B12]',
+    'bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] ',
     'bg-[#205781]', 
     'bg-[#D9D9D9]'
   ],

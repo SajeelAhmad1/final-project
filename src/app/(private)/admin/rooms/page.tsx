@@ -18,7 +18,7 @@ export default async function RoomsPage() {
           <h2 className="text-xl font-semibold mb-4">Existing Rooms</h2>
           <div className="space-y-4">
             {rooms.map(room => (
-              <div key={room.id} className="border p-4 rounded-lg">
+              <div key={room.id} className="border p-4 rounded-lg bg-white">
                 <h3 className="font-medium">{room.name}</h3>
                 <p>Type: {room.type}</p>
                 <p>Capacity: {room.capacity}</p>

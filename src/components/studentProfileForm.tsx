@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Pencil } from "lucide-react";
+import logo from "@/assets/logo.png"
 
 type StudentProfile = {
   firstName: string;
@@ -81,28 +82,30 @@ const StudentProfileForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       let updatedProfile = { ...profile };
-
+  
       if (imageFile) {
         updatedProfile.imageUrl = await uploadImage(imageFile);
       }
-
+  
       const method = session?.user?.isProfileComplete ? "PUT" : "POST";
       const response = await fetch("/api/profile/student-profile", {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedProfile),
       });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
+  
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.message || "Failed to save profile");
+      // }
+  
       const data = await response.json();
       toast.success(data.message);
-      
+  
+      // Wait for the session update to complete before redirecting
       await update({
         user: {
           ...session?.user,
@@ -110,10 +113,10 @@ const StudentProfileForm: React.FC = () => {
           isProfileComplete: true
         }
       });
+  
+      // Redirect after successful update
+      window.location.href = "/student";
 
-      if (!session?.user?.isProfileComplete) {
-        router.push("/student/courses/register");
-      }
     } catch (error: any) {
       console.error("Error saving profile:", error);
       toast.error(error.message || "Failed to save profile");
@@ -133,7 +136,12 @@ const StudentProfileForm: React.FC = () => {
                 <Image src={imagePreview} alt="Profile" fill className="object-cover" />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
-                  No Image
+                  <Image
+                    src={logo.src}
+                    width={120}
+                    height={120}
+                    alt="profile image"
+                  />
                 </div>
               )}
             </div>
@@ -157,7 +165,7 @@ const StudentProfileForm: React.FC = () => {
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h2 className="md:col-span-2 text-xl font-semibold">Personal Information</h2>
-          
+
           {[
             { label: "First Name", name: "firstName", type: "text", required: true },
             { label: "Last Name", name: "lastName", type: "text", required: true },
@@ -172,7 +180,7 @@ const StudentProfileForm: React.FC = () => {
                 value={profile[field.name as keyof StudentProfile] || ""}
                 onChange={handleChange}
                 required={field.required}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 py-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
           ))}
@@ -181,7 +189,7 @@ const StudentProfileForm: React.FC = () => {
         {/* Academic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h2 className="md:col-span-2 text-xl font-semibold">Academic Information</h2>
-          
+
           {[
             { label: "Roll Number", name: "rollNumber", type: "text", required: true },
             { label: "Batch", name: "batch", type: "text", required: true },
@@ -197,7 +205,7 @@ const StudentProfileForm: React.FC = () => {
                 value={profile[field.name as keyof StudentProfile] || ""}
                 onChange={handleChange}
                 required={field.required}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 py-1  block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
           ))}
@@ -206,7 +214,7 @@ const StudentProfileForm: React.FC = () => {
         {/* Contact Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h2 className="md:col-span-2 text-xl font-semibold">Contact Information</h2>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone *</label>
             <input
@@ -215,7 +223,7 @@ const StudentProfileForm: React.FC = () => {
               value={profile.phone || ""}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 py-1  block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
 
@@ -235,7 +243,7 @@ const StudentProfileForm: React.FC = () => {
                 name={field.name}
                 value={profile[field.name as keyof StudentProfile] || ""}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 py-1  block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
           ))}
@@ -244,7 +252,7 @@ const StudentProfileForm: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+          className="w-full py-2 px-4 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0]  text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
         >
           {loading ? "Saving..." : session?.user?.isProfileComplete ? "Update Profile" : "Create Profile"}
         </button>

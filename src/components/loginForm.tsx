@@ -216,7 +216,7 @@ function ClientLoginForm() {
 
               <button
                 type="submit"
-                className={`bg-[#F19B12] rounded-md text-base font-medium text-white py-2 ${
+                className={`bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] rounded-md text-base font-medium text-white py-2 ${
                   isSubmitting || loading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting || loading}

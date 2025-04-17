@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await request.json();
 
     // Delete all sections first (due to foreign key constraint)
     await prisma.section.deleteMany({

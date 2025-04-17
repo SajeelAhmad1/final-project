@@ -170,7 +170,7 @@ function ClientPasswordForm() {
 
       {loading ? (
         <button
-          className="w-full rounded-[6.56px] py-3 bg-[#F19B12] text-[#FFFFFF]"
+          className="w-full rounded-[6.56px] py-3 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0]  text-[#FFFFFF]"
           type="button"
           disabled
         >
@@ -178,7 +178,7 @@ function ClientPasswordForm() {
         </button>
       ) : (
         <button
-          className="w-full rounded-[6.56px] py-3 bg-[#F19B12] text-[#FFFFFF]"
+          className="w-full rounded-[6.56px] py-3 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0]  text-[#FFFFFF]"
           type="submit"
           disabled={formik.isSubmitting || !formik.isValid || loading}
         >

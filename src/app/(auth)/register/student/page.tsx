@@ -1,22 +1,23 @@
 "use client";
 import React, { useEffect } from "react";
-import bgImg from "@/assets/myImages/login.png";
+import bgImg from "@/assets/onBoarding/register.png";
 import ClientLoginForm from "@/components/registerForm";
 import Image from "next/image";
+import logo from "@/assets/logo.png"
 
 export default function Home() {
   useEffect(() => {
-    document.title = "Register - Lyalla and Lora";
+    document.title = "Register - Academic Management System";
     const metaDescription = document.querySelector("meta[name='description']");
     if (metaDescription) {
       metaDescription.setAttribute(
         "content",
-        "Register yourself on Lyalla and Lora"
+        "Register yourself on Academic Management System"
       );
     } else {
       const newMetaDescription = document.createElement("meta");
       newMetaDescription.name = "description";
-      newMetaDescription.content = "Register yourself on Lyalla and Lora";
+      newMetaDescription.content = "Register yourself on Academic Management System";
       document.head.appendChild(newMetaDescription);
     }
   }, []);
@@ -25,13 +26,20 @@ export default function Home() {
     <div className="relative grid grid-cols-1 md:grid-cols-2">
       <section className="relative h-screen z-10 flex flex-col justify-center items-center md:items-center p-6">
         <div className="w-full text-center md:text-left space-y-2">
+          <Image
+            src={logo.src}
+            width={100}
+            height={100}
+            alt="logo"
+            className="mx-auto pb-4"
+          />
           <h1 className="font-medium text-[24px] md:text-[32px] lg:text-[40px] tracking-[-2%] text-center leading-[56.96px] text-black">
             <span className="whitespace-nowrap">
-              Browse deals on <br />Top Quality Products
+              Manage Your Academic <br />Schedule Efficiently
             </span>
           </h1>
           <p className="text-black text-[14px] md:text-[18px] leading-[43.7px] text-center my-1">
-          Be the first to shop our latest collections.
+            Check your classes, timetable and exam schedules
           </p>
         </div>
         <div className="max-w-[400px] w-full">
@@ -58,7 +66,7 @@ export default function Home() {
           </p>
         </div>
       </section>
-      
+
       <div className="absolute right-0 top-0 w-1/2 h-screen">
         <Image
           src={bgImg.src}

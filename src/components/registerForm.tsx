@@ -139,7 +139,7 @@ export default function ClientLoginForm() {
               
               <button
                 type="submit"
-                className="bg-[#F19B12] text-white font-medium text-base py-2 px-4 rounded mt-2"
+                className="bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white font-medium text-base py-2 px-4 rounded mt-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Signing up..." : "Continue"}

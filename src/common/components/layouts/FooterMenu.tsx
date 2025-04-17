@@ -90,7 +90,7 @@ const Footer = () => {
                                     <button 
                                         type="submit"
                                         className={`${
-                                            status === 'loading' ? 'bg-gray-500' : 'bg-[#F19B12] hover:bg-[#e08a00]'
+                                            status === 'loading' ? 'bg-gray-500' : 'bg-gradient-to-b from-[#579FE1] to-[#1B8BF0]  hover:bg-[#e08a00]'
                                         } text-white px-3 py-2 rounded-r-md flex items-center justify-center transition-colors`}
                                         disabled={status === 'loading'}
                                     >

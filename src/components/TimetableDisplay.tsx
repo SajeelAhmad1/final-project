@@ -100,7 +100,7 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
                   {dayData.rooms.map((roomData, roomIndex) => (
                     <div key={roomIndex} className="border rounded-lg p-3">
                       <h4 className="font-medium mb-2">
-                        {roomData.room.name} ({roomData.room.type})
+                        {roomData.room.name} 
                       </h4>
                       <div className="space-y-3">
                         <div className="bg-gray-50 p-2 rounded">

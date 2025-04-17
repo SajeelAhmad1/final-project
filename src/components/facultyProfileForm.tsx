@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
+import logo from "@/assets/logo.png"
 import { Pencil } from "lucide-react";
 
 type FacultyProfile = {
@@ -112,7 +113,7 @@ const FacultyProfileForm: React.FC = () => {
 
       const data = await response.json();
       toast.success(data.message);
-      
+
       await update({
         user: {
           ...session?.user,
@@ -122,7 +123,7 @@ const FacultyProfileForm: React.FC = () => {
       });
 
       if (!session?.user?.isProfileComplete) {
-        router.push("/");
+        router.push("/faculty");
       }
     } catch (error: any) {
       console.error("Error saving profile:", error);
@@ -143,7 +144,12 @@ const FacultyProfileForm: React.FC = () => {
                 <Image src={imagePreview} alt="Profile" fill className="object-cover" />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
-                  No Image
+                  <Image
+                    src={logo.src}
+                    width={120}
+                    height={120}
+                    alt="profile image"
+                  />
                 </div>
               )}
             </div>
@@ -167,7 +173,7 @@ const FacultyProfileForm: React.FC = () => {
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h2 className="md:col-span-2 text-xl font-semibold">Personal Information</h2>
-          
+
           {[
             { label: "First Name", name: "firstName", type: "text", required: true },
             { label: "Last Name", name: "lastName", type: "text", required: true },
@@ -182,7 +188,7 @@ const FacultyProfileForm: React.FC = () => {
                 value={profile[field.name as keyof FacultyProfile] || ""}
                 onChange={handleChange}
                 required={field.required}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 py-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
           ))}
@@ -191,7 +197,7 @@ const FacultyProfileForm: React.FC = () => {
         {/* Professional Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h2 className="md:col-span-2 text-xl font-semibold">Professional Information</h2>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Department *
@@ -201,7 +207,7 @@ const FacultyProfileForm: React.FC = () => {
               value={profile.department || ""}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 py-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Select Department</option>
               {departments.map(dept => (
@@ -219,7 +225,7 @@ const FacultyProfileForm: React.FC = () => {
               value={profile.designation || ""}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 py-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Select Designation</option>
               {designations.map(designation => (
@@ -235,7 +241,7 @@ const FacultyProfileForm: React.FC = () => {
               name="phone"
               value={profile.phone || ""}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 py-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -243,7 +249,7 @@ const FacultyProfileForm: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+          className="w-full py-2 px-4 bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
         >
           {loading ? "Saving..." : session?.user?.isProfileComplete ? "Update Profile" : "Create Profile"}
         </button>

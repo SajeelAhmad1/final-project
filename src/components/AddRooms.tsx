@@ -74,7 +74,7 @@ export default function RoomForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+        className="bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white px-4 py-2 rounded disabled:bg-gray-400"
       >
         {isSubmitting ? 'Creating...' : 'Create Room'}
       </button>

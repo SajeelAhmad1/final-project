@@ -108,8 +108,12 @@ export default function SessionSectionManager({ initialSessions }: SessionSectio
     setError('');
 
     try {
-      const response = await fetch(`/api/sessions/${sessionId}`, {
-        method: 'DELETE'
+      const response = await fetch('/api/sessions', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: sessionId })
       });
 
       if (!response.ok) {
@@ -132,8 +136,12 @@ export default function SessionSectionManager({ initialSessions }: SessionSectio
     setError('');
 
     try {
-      const response = await fetch(`/api/sections/${sectionId}`, {
-        method: 'DELETE'
+      const response = await fetch('/api/sections', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: sectionId })
       });
 
       if (!response.ok) {
@@ -212,7 +220,7 @@ export default function SessionSectionManager({ initialSessions }: SessionSectio
             disabled={isLoading || !newSection.trim() || !selectedSession}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
           >
-            {isLoading ? 'Adding...' : 'Add Section'}
+            {isLoading ? 'Adding...' : 'Add'}
           </button>
         </div>
       </div>

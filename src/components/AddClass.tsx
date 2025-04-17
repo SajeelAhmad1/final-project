@@ -159,7 +159,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <button
           onClick={() => window.location.reload()}
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+          className="w-full bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white py-2 rounded-md hover:bg-blue-700"
         >
           Retry
         </button>
@@ -270,7 +270,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+          className="w-full bg-gradient-to-b from-[#579FE1] to-[#1B8BF0] text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center">

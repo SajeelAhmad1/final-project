@@ -45,9 +45,10 @@ export default function FacultyTable({ faculties }: FacultyTableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {faculties.map((faculty) => (
-              <tr 
-              onClick={()=>router.push(`/admin/faculty${faculty.id}`)}
-              key={faculty.id}>
+              <tr
+              className='cursor-pointer hover:bg-gray-100'
+                onClick={() => router.push(`/admin/faculty/${faculty.id}`)}
+                key={faculty.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {faculty.user.email}
                 </td>
@@ -60,13 +61,13 @@ export default function FacultyTable({ faculties }: FacultyTableProps) {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(faculty.user.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <Link
-                    href={`/admin/faculty/${faculty.id}`}
+                <td className="flex px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div
+                    onClick={() => router.push(`/admin/faculty/${faculty.id}`)}
                     className="text-blue-600 hover:text-blue-900 mr-4"
                   >
                     View
-                  </Link>
+                  </div>
                   <button className="text-red-600 hover:text-red-900">
                     Disable
                   </button>

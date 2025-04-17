@@ -49,14 +49,21 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request) {
   try {
-    const { id } = params;
+    const { id } = await request.json();
 
-    // First delete all classes in this section (if needed)
-    // await prisma.class.deleteMany({
-    //   where: { sectionId: id }
-    // });
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Section ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // First delete all classes in this section
+    await prisma.class.deleteMany({
+      where: { sectionId: id }
+    });
 
     // Then delete the section
     await prisma.section.delete({
