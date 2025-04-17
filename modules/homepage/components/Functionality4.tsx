@@ -8,7 +8,6 @@ export default function Functionality4() {
   return (
     <div className="w-full bg-white py-16 px-6">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8">
-        {/* Left Side - Text and Buttons */}
         <div className="md:w-1/2 flex flex-col">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             Ready to Take Control of Your Academic Time?
@@ -30,7 +29,6 @@ export default function Functionality4() {
           </div>
         </div>
 
-        {/* Right Side - Image */}
         <div className="md:w-1/2">
           <div className="rounded-lg overflow-hidden shadow-lg">
             <img

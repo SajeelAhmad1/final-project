@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export default function FAQs() {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggleFAQ = (index:any) => {
+  const toggleFAQ = (index: any) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -33,7 +33,6 @@ export default function FAQs() {
   return (
     <div className="w-full bg-white py-16 px-6">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold mb-3">Frequently Asked Questions</h2>
           <p className="text-gray-600">
@@ -42,7 +41,6 @@ export default function FAQs() {
           </p>
         </div>
 
-        {/* FAQ Accordion */}
         <div className="mb-12">
           {faqItems.map((item, index) => (
             <div key={index} className="border-b border-gray-200">
@@ -61,7 +59,7 @@ export default function FAQs() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
               </button>
-              <div 
+              <div
                 className={`px-4 pb-6 ${openIndex === index ? 'block' : 'hidden'}`}
               >
                 <p className="text-gray-600">{item.answer}</p>
@@ -70,20 +68,19 @@ export default function FAQs() {
           ))}
         </div>
 
-        {/* Contact CTA */}
         <div className="bg-blue-500 rounded-lg p-8 text-center text-white">
           <h3 className="text-2xl font-bold mb-2">Still have questions?</h3>
           <p className="mb-6">Contact us for more information.</p>
-          <a 
-            href="#" 
+          <a
+            href="#"
             className="inline-flex items-center border border-white rounded-full px-6 py-2 text-white hover:bg-blue-600 transition-colors"
           >
             Contact
-            <svg 
-              className="ml-2 w-4 h-4" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="ml-2 w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>

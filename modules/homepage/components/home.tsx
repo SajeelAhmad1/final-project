@@ -8,20 +8,20 @@ import Functionality4 from "./Functionality4"
 import Hero from "./hero"
 import Navbar from "./Navbar"
 
-export const HomePage = () =>{
+export const HomePage = () => {
     return (
         <>
-        <div className="p-8 px-16 space-y-6">
-            <Navbar/>
-            <Hero/>
-            <Features/>
-            <Functionality/>
-            <Functionality2 />
-            <Functionality3 />
-            <Functionality4 />
-            <FAQs/>
-        </div>
-            <Footer/>
+            <div className="p-8 px-4 md:px-16 space-y-6">
+                <Navbar />
+                <Hero />
+                <Features />
+                <Functionality />
+                <Functionality2 />
+                <Functionality3 />
+                <Functionality4 />
+                <FAQs />
+            </div>
+            <Footer />
         </>
     )
 }

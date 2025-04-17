@@ -7,10 +7,8 @@ export default function Footer() {
   const router = useRouter();
   return (
     <footer>
-      {/* Main Footer */}
       <div className="w-full bg-blue-500 py-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between">
-          {/* Logo & Description */}
           <div className="mb-8 md:mb-0 md:w-1/3">
             <div className="flex items-center mb-4">
               <span className="text-white text-2xl font-bold">ACADEMIC</span>
@@ -38,7 +36,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Section 1 */}
           <div className="mb-6 md:mb-0">
             <h3 className="text-white font-bold mb-4">Platform</h3>
             <ul className="space-y-2">
@@ -53,7 +50,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Links Section 2 */}
           <div className="mb-6 md:mb-0">
             <h3 className="text-white font-bold mb-4">About Us</h3>
             <ul className="space-y-2">
@@ -66,7 +62,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Footer */}
       <div className="w-full bg-white py-4 px-6 border-t border-gray-200">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex space-x-6 mb-4 md:mb-0">

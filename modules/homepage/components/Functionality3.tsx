@@ -3,7 +3,6 @@ import React from 'react';
 export default function Functionality3() {
   return (
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto py-12 px-6">
-      {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-3">
           Manage Courses, Rooms, And Classes With Ease
@@ -13,9 +12,7 @@ export default function Functionality3() {
         </p>
       </div>
 
-      {/* Feature Cards Grid */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-        {/* Card 1 - Add/Delete Courses */}
         <div className="bg-gray-50 rounded-lg p-8 shadow-sm border border-gray-200 flex flex-col items-center">
           <div className="text-blue-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +22,6 @@ export default function Functionality3() {
           <h2 className="font-bold text-xl text-center">Add/Delete Courses</h2>
         </div>
 
-        {/* Card 2 - Assign To Faculty */}
         <div className="bg-gray-50 rounded-lg p-8 shadow-sm border border-gray-200 flex flex-col items-center">
           <div className="text-blue-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,7 +31,6 @@ export default function Functionality3() {
           <h2 className="font-bold text-xl text-center">Assign To Faculty</h2>
         </div>
 
-        {/* Card 3 - Manage Room Availability */}
         <div className="bg-gray-50 rounded-lg p-8 shadow-sm border border-gray-200 flex flex-col items-center">
           <div className="text-blue-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,7 +40,6 @@ export default function Functionality3() {
           <h2 className="font-bold text-xl text-center">Manage Room Availability</h2>
         </div>
 
-        {/* Card 4 - Auto-Sync With Timetable & Exams */}
         <div className="bg-gray-50 rounded-lg p-8 shadow-sm border border-gray-200 flex flex-col items-center">
           <div className="text-blue-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
