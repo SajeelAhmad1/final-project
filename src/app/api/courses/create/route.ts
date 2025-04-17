@@ -22,6 +22,26 @@ export async function POST(request: Request) {
       );
     }
 
+    let facultysId;
+
+    if (body.facultyId){
+      facultysId = await prisma.user.findFirst({
+        where:{
+          email: body.facultyId
+        },
+        select:{
+          faculty: {
+            select: {
+              id: true,
+            },
+          }
+        }
+      })
+    }
+
+    console.log("here", facultysId?.faculty?.id)
+    console.log("here", body.facultyId)
+
     // Create the course
     const newCourse = await prisma.course.create({
       data: {
@@ -29,18 +49,17 @@ export async function POST(request: Request) {
         name: body.name,
         department: body.department,
         credits: body.credits,
-        facultyId: body.facultyId || null
+        facultyId: facultysId?.faculty?.id || null
       },
       include: {
         faculty: {
           include: {
-            user: true // Include the associated user to get the email
+            user: true
           }
         }
       }
     });
 
-    // If course is assigned to a faculty, send them an email
     if (body.facultyId && newCourse.faculty) {
       try {
         const faculty = newCourse.faculty;

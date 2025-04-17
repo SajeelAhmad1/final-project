@@ -1,7 +1,10 @@
+"use client"
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import schImg from "@/assets/home/schedule.png"
 
 export default function Functionality4() {
+  const router = useRouter();
   return (
     <div className="w-full bg-white py-16 px-6">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8">
@@ -14,10 +17,14 @@ export default function Functionality4() {
             Join the platform today and streamline the way your institution works.
           </p>
           <div className="flex gap-4">
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-md">
+            <button
+              onClick={() => router.push("register/faculty")}
+              className="bg-blue-500 text-white px-6 py-2 rounded-md">
               Sign up as Teacher
             </button>
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-md">
+            <button
+              onClick={() => router.push("register/student")}
+              className="bg-blue-500 text-white px-6 py-2 rounded-md">
               Sign up as Student
             </button>
           </div>
@@ -26,9 +33,9 @@ export default function Functionality4() {
         {/* Right Side - Image */}
         <div className="md:w-1/2">
           <div className="rounded-lg overflow-hidden shadow-lg">
-            <img 
-              src={schImg.src} 
-              alt="Students and teachers working together at computers" 
+            <img
+              src={schImg.src}
+              alt="Students and teachers working together at computers"
               className="w-full h-full object-cover"
             />
           </div>

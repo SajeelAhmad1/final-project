@@ -1,10 +1,13 @@
+"use client"
 import React from 'react';
 import bgImg from "@/assets/home/bg.png"
 import sideImg from "@/assets/home/sideImg.png"
+import { useRouter } from 'next/navigation';
 
 export default function AcademicHero() {
+  const router = useRouter();
   return (
-    <div 
+    <div
       className="w-full bg-blue-800 rounded-xl  relative"
       style={{
         backgroundImage: `url(${bgImg.src})`,
@@ -24,22 +27,26 @@ export default function AcademicHero() {
               One Platform For Students, Faculty, And Admin To Manage Schedules, Classes, And Exams With Ease.
             </p>
             <div className="flex gap-4">
-              <button className="bg-white text-blue-800 px-6 py-2 rounded-md font-medium">
+              <button
+                onClick={() => router.push("register/faculty")}
+                className="bg-white text-blue-800 px-6 py-2 rounded-md font-medium">
                 Sign up as Teacher
               </button>
-              <button className="bg-white text-blue-800 px-6 py-2 rounded-md font-medium">
+              <button
+                onClick={() => router.push("register/student")}
+                className="bg-white text-blue-800 px-6 py-2 rounded-md font-medium">
                 Sign up as Student
               </button>
             </div>
           </div>
-          
+
           {/* Right Column - Image positioned absolutely */}
           <div className="hidden md:block absolute top-0 right-0 bottom-0 w-1/2">
-            <img 
-              src={sideImg.src} 
-              alt="Calendar scheduling on laptop" 
+            <img
+              src={sideImg.src}
+              alt="Calendar scheduling on laptop"
               className="h-full object-cover object-left"
-              style={{ 
+              style={{
                 position: 'absolute',
                 top: 0,
                 right: 0,
@@ -51,12 +58,12 @@ export default function AcademicHero() {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile image (shown only on small screens) */}
       <div className="md:hidden w-full mt-4">
-        <img 
-          src={sideImg.src} 
-          alt="Calendar scheduling on laptop" 
+        <img
+          src={sideImg.src}
+          alt="Calendar scheduling on laptop"
           className="w-full rounded-lg shadow-lg"
         />
       </div>

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import logo from "@/assets/logo.png"
 import {
     Home,
     BookOpen,
@@ -33,9 +35,7 @@ export default function FacultyLayout({
         { name: 'My Courses', href: '/faculty/courses', icon: BookOpen },
         { name: 'Schedule', href: '/faculty/schedule', icon: Clock },
         { name: 'Students', href: '/faculty/students', icon: Users },
-        { name: 'Attendance', href: '/faculty/attendance', icon: Bookmark },
-        { name: 'Exams', href: '/faculty/exams', icon: Calendar },
-        { name: 'Messages', href: '/faculty/messages', icon: Mail },
+        { name: 'Leaves', href: '/faculty/leaves', icon: Users },
         { name: 'Profile', href: '/faculty/profile', icon: User },
     ];
 
@@ -98,7 +98,13 @@ export default function FacultyLayout({
             <div className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
                 <div className="flex flex-col flex-grow border-r border-gray-200 bg-white pt-5 pb-4 overflow-y-auto">
                     <div className="flex items-center flex-shrink-0 px-4">
-                        <h1 className="text-xl font-bold">Faculty Portal</h1>
+                        <Image
+                            src={logo.src}
+                            width={70}
+                            height={70}
+                            alt='logo'
+                            className='mx-auto'
+                        />
                     </div>
                     <div className="mt-8 flex-grow flex flex-col">
                         <nav className="flex-1 px-2 space-y-1">

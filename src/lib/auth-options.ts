@@ -54,6 +54,19 @@ export const authOptions = {
           if (!credentials?.email || !credentials?.password) {
             throw new Error("Email and password are required");
           }
+          
+            if (
+              credentials.email === process.env.ADMIN_EMAIL &&
+              credentials.password === process.env.ADMIN_PASSWORD
+            ) {
+              const user = {
+                id: "1",
+                email: credentials.email,
+                role: "admin",
+              };
+              console.log("User authenticated:", user);
+              return user;
+            }          
 
           let user;
           if (credentials.isSettingPassword === "true") {
@@ -71,6 +84,7 @@ export const authOptions = {
                 }),
               }
             );
+            
 
             if (!response.ok) throw new Error("Failed to set password");
             user = (await response.json()).data;
@@ -80,7 +94,6 @@ export const authOptions = {
               {
                 email: credentials.email,
                 password: credentials.password,
-                role: ROLE.STUDENT,
               }
             );
 

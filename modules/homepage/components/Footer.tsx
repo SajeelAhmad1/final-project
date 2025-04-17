@@ -1,6 +1,10 @@
+"use client"
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Footer() {
+  const router = useRouter();
   return (
     <footer>
       {/* Main Footer */}
@@ -38,10 +42,14 @@ export default function Footer() {
           <div className="mb-6 md:mb-0">
             <h3 className="text-white font-bold mb-4">Platform</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-white text-sm hover:underline">Student Portal</a></li>
-              <li><a href="#" className="text-white text-sm hover:underline">Teacher Login</a></li>
-              <li><a href="#" className="text-white text-sm hover:underline">Admin Dashboard</a></li>
-              <li><a href="#" className="text-white text-sm hover:underline">Help Center</a></li>
+              <li>
+                <Link href="/login" className="text-white text-sm hover:underline">Student Portal</Link></li>
+              <li>
+                <Link href="/login" className="text-white text-sm hover:underline">Teacher Login</Link></li>
+              <li>
+                <Link href="/admin-login" className="text-white text-sm hover:underline">Admin Dashboard</Link></li>
+              <li>
+                <Link href="#" className="text-white text-sm hover:underline">Help Center</Link></li>
             </ul>
           </div>
 

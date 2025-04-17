@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { ClipboardList, Calendar, Clock, BookOpen, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useSession } from 'next-auth/react';
 
 type StatCardProps = {
   title: string;
@@ -104,67 +105,79 @@ export default function StudentDashboard() {
     activities: true,
     events: true
   });
-  
-  const [stats, setStats] = useState({
-    courses: 0,
-    classesToday: 0,
-    pendingAssignments: 0,
-    averageGrade: '0.0'
-  });
+  const {data: session} = useSession();
   
   const [recentActivities, setRecentActivities] = useState<ActivityItemProps[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<EventItemProps[]>([]);
 
-  const fetchData = async () => {
-    try {
-      setLoading({
-        courses: true,
-        classes: true,
-        assignments: true,
-        grades: true,
-        activities: true,
-        events: true
-      });
+  // Initialize with default values
+const [stats, setStats] = useState({
+  courses: 0,
+  classesToday: 0,
+  pendingAssignments: 0,
+  averageGrade: '0.0'
+});
 
-      // Fetch all data in parallel
-      const [
-        courses,
-        classesToday,
-        assignments,
-        grades,
-        activities,
-        events
-      ] = await Promise.all([
-        fetch('/api/courses').then(res => res.json()),
-        fetch('/api/classes/today').then(res => res.json()),
-        fetch('/api/student/assignments/pending').then(res => res.json()),
-        fetch('/api/student/grades/average').then(res => res.json()),
-        fetch('/api/student/activities/recent').then(res => res.json()),
-        fetch('/api/student/events/upcoming').then(res => res.json())
-      ]);
+const fetchData = async () => {
+  try {
+    setLoading({
+      courses: true,
+      classes: true,
+      assignments: true,
+      grades: true,
+      activities: true,
+      events: true
+    });
 
-      setStats({
-        courses: courses.count,
-        classesToday: classesToday.count,
-        pendingAssignments: assignments.count,
-        averageGrade: grades.average.toFixed(1)
-      });
+    const id = session?.user?.id;
+    console.log("here")
 
-      setRecentActivities(activities);
-      setUpcomingEvents(events);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    } finally {
-      setLoading({
-        courses: false,
-        classes: false,
-        assignments: false,
-        grades: false,
-        activities: false,
-        events: false
-      });
-    }
-  };
+    const [
+      coursesRes,
+      classesRes,
+      assignmentsRes,
+      gradesRes,
+      activitiesRes,
+      eventsRes
+    ] = await Promise.all([
+      fetch(`/api/courses/count/${id}`),
+      fetch('/api/classes/today'),
+      fetch('/api/student/assignments/pending'),
+      fetch('/api/student/grades/average'),
+      fetch('/api/student/activities/recent'),
+      fetch('/api/student/events/upcoming')
+    ]);
+
+    // Handle each response separately
+    const coursesData = await coursesRes.json();
+    const classesData = await classesRes.json();
+    const assignmentsData = await assignmentsRes.json();
+    const gradesData = await gradesRes.json();
+    const activitiesData = await activitiesRes.json();
+    const eventsData = await eventsRes.json();
+
+    setStats({
+      courses: coursesData.count || 0,
+      classesToday: classesData.count || 0,
+      pendingAssignments: assignmentsData.count || 0,
+      averageGrade: gradesData.average?.toFixed(1) || '0.0'
+    });
+
+    setRecentActivities(activitiesData);
+    setUpcomingEvents(eventsData);
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  } finally {
+    setLoading({
+      courses: false,
+      classes: false,
+      assignments: false,
+      grades: false,
+      activities: false,
+      events: false
+    });
+  }
+};
 
   useEffect(() => {
     fetchData();

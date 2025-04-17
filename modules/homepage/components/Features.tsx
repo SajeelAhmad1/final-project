@@ -1,6 +1,9 @@
+"use client"
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Features() {
+    const router = useRouter()
     return (
         <div className="flex flex-col items-center w-full max-w-6xl mx-auto py-12 px-6">
             <div className="text-center mb-8">
@@ -46,10 +49,14 @@ export default function Features() {
             </div>
 
             <div className="flex gap-6 mt-4">
-                <button className="bg-blue-500 text-white px-8 py-3 rounded-md text-base font-medium">
+                <button 
+                onClick={() => router.push("register/faculty")}
+                className="bg-blue-500 text-white px-8 py-3 rounded-md text-base font-medium">
                     Sign up as Teacher
                 </button>
-                <button className="bg-blue-500 text-white px-8 py-3 rounded-md text-base font-medium">
+                <button 
+                onClick={() => router.push("register/student")}
+                className="bg-blue-500 text-white px-8 py-3 rounded-md text-base font-medium">
                     Sign up as Student
                 </button>
             </div>
