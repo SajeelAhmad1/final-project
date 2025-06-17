@@ -3,8 +3,13 @@
 import { Table, Badge, Button } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { formatExamDate } from '@/lib/dateUtils';
+import { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export function SeatingChart({ exam }: { exam: any }) {
+  const pdfRef = useRef<HTMLDivElement>(null);
+
   const columns = [
     {
       title: 'Seat',
@@ -27,15 +32,16 @@ export function SeatingChart({ exam }: { exam: any }) {
     {
       title: 'Department',
       render: (_: any, record: any) => {
-        // Parse metadata if stored as JSON string
-        const metadata = typeof record.metadata === 'string' 
-          ? JSON.parse(record.metadata)
-          : record.metadata;
+        // Try to get department from different possible locations
+        const department = record.student?.department || 
+                         (typeof record.metadata === 'string' 
+                          ? JSON.parse(record.metadata)?.department 
+                          : record.metadata?.department);
         
         return (
           <Badge 
-            color={getDepartmentColor(metadata?.department)}
-            text={metadata?.department}
+            color={getDepartmentColor(department)}
+            text={department || 'N/A'}
           />
         );
       },
@@ -43,20 +49,38 @@ export function SeatingChart({ exam }: { exam: any }) {
     }
   ];
 
-  const handleDownload = () => {
-    // Implement PDF generation
-    console.log('Download seating plan');
+  const downloadPDF = async () => {
+    const input = pdfRef.current;
+    if (!input) return;
+
+    try {
+      const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        logging: true,
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${exam.course.code}_seating_chart.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" ref={pdfRef}>
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">
           {exam.course.code} - {exam.course.name}
         </h2>
         <Button 
           icon={<DownloadOutlined />}
-          onClick={handleDownload}
+          onClick={downloadPDF}
         >
           Download Seating Plan
         </Button>
@@ -81,12 +105,24 @@ export function SeatingChart({ exam }: { exam: any }) {
 }
 
 function getDepartmentColor(dept?: string) {
+  if (!dept) return 'gray';
+  
+  const deptUpper = dept.toUpperCase();
   const colors: Record<string, string> = {
     'COMPUTER SCIENCE': 'blue',
+    'COMPUTER': 'blue',
+    'CS': 'blue',
     'EE': 'green',
+    'ELECTRICAL': 'green',
+    'ELECTRICAL ENGINEERING': 'green',
     'ME': 'orange',
+    'MECHANICAL': 'orange',
+    'MECHANICAL ENGINEERING': 'orange',
     'CE': 'red',
-    'MT': 'purple'
+    'CIVIL': 'red',
+    'CIVIL ENGINEERING': 'red',
+    'MT': 'purple',
+    'MATHEMATICS': 'purple'
   };
-  return dept ? colors[dept] || 'gray' : 'gray';
+  return colors[deptUpper] || 'gray';
 }

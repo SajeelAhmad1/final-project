@@ -144,6 +144,26 @@ enum RoomType {
   EXAM_HALL
 }
 
+// Add to your Prisma schema
+model SchedulingPreference {
+  id            String   @id @default(uuid())
+  facultyId     String?
+  roomId        String?
+  dayPreference String[]
+  timePreference String[]
+  weight        Int      @default(1)
+  createdAt     DateTime @default(now())
+}
+
+model SchedulingConstraint {
+  id          String   @id @default(uuid())
+  type        String   // HARD or SOFT
+  description String
+  rule        Json     // Store complex constraint rules
+  weight      Int      @default(1)
+  createdAt   DateTime @default(now())
+}
+
 model Resource {
   id          String     @id @default(uuid())
   name        String

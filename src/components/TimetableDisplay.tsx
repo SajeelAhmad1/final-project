@@ -6,7 +6,7 @@ export default function TimetableDisplay({ classes, rooms }: { classes: any[], r
   console.log(classes)
   console.log(rooms)
   const [selectedDay, setSelectedDay] = useState('Monday');
-  const [viewMode, setViewMode] = useState<'room' | 'day'>('day');
+  const [viewMode, setViewMode] = useState<'room' | 'day'>('room');
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeBlocks = [

@@ -4,8 +4,10 @@ import { getToken } from "next-auth/jwt";
 
 // Define protected paths
 const protectedPaths = [
-  // "/student",
-  "/facultys",
+  "/student",
+  "/faculty",
+  "/admin",
+
 ];
 
 export async function middleware(req: NextRequest) {
@@ -48,15 +50,15 @@ export async function middleware(req: NextRequest) {
 
   const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
 
-  if (isProtectedPath) {
-    if (token.isProfileComplete === true) {
-      const profileUrl = new URL(
-        `/profile/?email=${encodeURIComponent(email)}`,
-        req.url
-      );
-      return NextResponse.redirect(profileUrl);
-    }
-  }
+  // if (isProtectedPath) {
+    // if (token.isProfileComplete === false) {
+    //   const profileUrl = new URL(
+    //     `/profile/?email=${encodeURIComponent(email)}`,
+    //     req.url
+    //   );
+    //   return NextResponse.redirect(profileUrl);
+    // }
+  // }
 
   // Allow the request to proceed
   return NextResponse.next();
@@ -65,8 +67,9 @@ export async function middleware(req: NextRequest) {
 // Middleware configuration
 export const config = {
   matcher: [
-    // "/student/:path*",
-    "/facultys/:path*",
+    "/student/:path*",
+    "/faculty/:path*",
+    "/admin/:path*",
     "/.well-known/assetlinks.json",
   ],
 };

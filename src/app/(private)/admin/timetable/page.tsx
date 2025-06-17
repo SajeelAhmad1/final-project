@@ -1,4 +1,4 @@
-'use client'; // This marks the component as a Client Component
+'use client'; 
 
 import ClassForm from '@/components/AddClass';
 import TimetableGenerator from '@/components/TimetableGenerator';
@@ -42,17 +42,15 @@ export default function TimetableManagementPage() {
   return (
     <div className="container mx-auto py-8 space-y-6">
       <h1 className="text-2xl font-bold">Timetable Management</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <SessionSectionManager initialSessions={sessions} />
-          <ClassForm onSuccess={fetchClasses} />
+      <div className="lg:col-span-1 space-y-6">
           <TimetableGenerator 
             unscheduledClasses={data.unscheduledClasses} 
             rooms={rooms}
             onGenerate={fetchClasses}
-          />
+          /> 
         </div>
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        
         
         <div className="lg:col-span-2">
           <TimetableDisplay rooms={rooms} classes={data.scheduledClasses} />

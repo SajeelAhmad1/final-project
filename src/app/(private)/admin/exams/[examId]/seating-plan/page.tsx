@@ -1,4 +1,3 @@
-// app/(private)/admin/exams/[examId]/seating-plan/page.tsx
 import prisma from '@/lib/prisma';
 import { SeatingChart } from '@/components/exams/SeatingChart';
 

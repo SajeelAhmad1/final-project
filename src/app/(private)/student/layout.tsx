@@ -2,20 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
   Home,
   BookOpen,
   Clock,
-  Calendar,
-  Bell,
   Menu,
   X,
-  User,
-  GraduationCap,
-  BarChart,
-  ClipboardList,
-  CreditCard
+  LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
 import logo from "@/assets/logo.png"
@@ -26,15 +21,30 @@ export default function StudentLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
     { name: 'Dashboard', href: '/student', icon: Home },
     { name: 'My Courses', href: '/student/courses', icon: BookOpen },
     { name: 'Class Schedule', href: '/student/schedule', icon: Clock },
-    { name: 'Exams', href: '/student/exams', icon: Calendar },
-    { name: 'Profile', href: '/student/profile', icon: User },
   ];
+
+  const handleLogout = async () => {
+    try {
+      // Using NextAuth.js/Auth.js signOut function
+      await signOut({
+        redirect: false,
+        callbackUrl: '/login'
+      });
+      
+      // Clear any client-side cache
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -60,8 +70,8 @@ export default function StudentLayout({
             className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"
             onClick={() => setSidebarOpen(false)}
           ></div>
-          <div className="fixed inset-y-0 left-0 pt-16 max-w-xs w-full bg-white shadow-lg z-50">
-            <nav className="mt-5 px-2 space-y-1">
+          <div className="fixed inset-y-0 left-0 pt-16 max-w-xs w-full bg-white shadow-lg z-50 flex flex-col">
+            <nav className="mt-5 px-2 space-y-1 flex-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
                 return (
@@ -87,6 +97,16 @@ export default function StudentLayout({
                 );
               })}
             </nav>
+            {/* Logout button for mobile */}
+            <div className="px-2 py-4 border-t">
+              <button
+                onClick={handleLogout}
+                className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -102,7 +122,6 @@ export default function StudentLayout({
               alt='logo'
               className='mx-auto'
             />
-
           </div>
           <div className="mt-8 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-1">
@@ -130,6 +149,16 @@ export default function StudentLayout({
                 );
               })}
             </nav>
+            {/* Logout button for desktop */}
+            <div className="px-2 py-4 mt-auto border-t">
+              <button
+                onClick={handleLogout}
+                className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>

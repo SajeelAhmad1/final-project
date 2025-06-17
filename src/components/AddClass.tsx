@@ -39,7 +39,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
     roomId: '',
     sessionId: '',
     sectionId: '',
-    preferredDay: ''
+    // preferredDay: ''
   });
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const [courses, setCourses] = useState<Course[]>([]);
@@ -130,7 +130,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
         sessionId: '', 
         sectionId: '' 
       });
-      onSuccess();
+      // onSuccess();
     } catch (err) {
       console.error('Error creating class:', err);
       setError(err instanceof Error ? err.message : 'Failed to create class');
@@ -236,7 +236,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
           </select>
         </div>
         
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium mb-1">Preferred Room</label>
           <select
             value={formData.roomId}
@@ -251,9 +251,9 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
         <label className="block text-sm font-medium mb-1">Preferred Day</label>
         <select
           value={formData.preferredDay}
@@ -265,7 +265,7 @@ export default function ClassForm({ onSuccess }: { onSuccess: () => void }) {
             <option key={day} value={day}>{day}</option>
           ))}
         </select>
-      </div>
+      </div> */}
         
         <button
           type="submit"
